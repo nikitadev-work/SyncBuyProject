@@ -3,10 +3,9 @@ info:
   title: SyncBuy Public API
   version: 1.0.0
   description: >
-    Внешний API для бота/клиентов. Канал-агностичный: ядро ничего не знает о Telegram/вебе.
-    Привязки к каналам выполняются через сущность Identity (см. /me/identities).
-    Покрывает регистрацию/логин, создание покупок, приглашения и участие, задачи,
-    фиксацию (accruals), оплату долгов (через internal payments), отчёты и завершение покупок.
+    Внешний API для клиентов (бот, веб, мобильные). Поддерживает регистрацию и логин,
+    создание покупок, приглашения и участие, задачи, фиксацию, оплату долгов,
+    отчёты и завершение покупок.
 
 servers:
   - url: http://api.local/v1
@@ -27,7 +26,8 @@ paths:
     post:
       tags: [Auth]
       operationId: register
-      summary: Зарегистрироваться
+      summary: Зарегистрироваться (только для password flow)
+      security: []   # публичный эндпоинт, без Bearer
       requestBody:
         required: true
         content:
@@ -36,25 +36,31 @@ paths:
       responses:
         '201':
           description: Created
-          headers:
-            Location:
-              description: URL нового пользователя
-              schema: { type: string, format: uri }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/User' }
         '400': { $ref: '#/components/responses/BadRequest' }
 
-  /auth/login:
+  /auth/token:
     post:
       tags: [Auth]
-      operationId: login
-      summary: Войти в аккаунт (MVP)
+      operationId: issueToken
+      summary: Получить JWT токен
+      description: >
+        Универсальная точка входа:
+        - grant_type=password → логин по паролю
+        - grant_type=external_identity → Telegram/email/phone/OAuth (создать или найти пользователя)
+        - grant_type=refresh_token → обновление токена
+      security: []   # публичный эндпоинт, без Bearer
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/LoginRequest' }
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PasswordGrant'
+                - $ref: '#/components/schemas/ExternalGrant'
+                - $ref: '#/components/schemas/RefreshGrant'
       responses:
         '200':
           description: OK
@@ -62,15 +68,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/AuthToken' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-
-  /auth/account:
-    delete:
-      tags: [Auth]
-      operationId: deleteAccount
-      summary: Удалить аккаунт (soft-delete/архив)
-      security: [{ bearerAuth: [] }]
-      responses:
-        '204': { description: No Content }
+        '400': { $ref: '#/components/responses/BadRequest' }
 
   /me:
     get:
@@ -548,15 +546,49 @@ components:
 
     RegisterRequest:
       type: object
-      required: [name]
+      required: [name, password]
       properties:
         name: { type: string }
+        password: { type: string, format: password }
 
-    LoginRequest:
+    PasswordGrant:
       type: object
-      required: [name]
+      required: [grant_type, name, password]
       properties:
-        name: { type: string, description: "MVP: минимальный логин по имени (каналы линкуются через /me/identities)" }
+        grant_type: { type: string, enum: [password] }
+        name: { type: string }
+        password: { type: string, format: password }
+
+    ExternalGrant:
+      type: object
+      required: [grant_type, provider, proof]
+      properties:
+        grant_type: { type: string, enum: [external_identity] }
+        provider:
+          type: string
+          enum: [telegram, email, phone, google, apple]
+        provider_user_id:
+          type: string
+          nullable: true
+        proof:
+          type: object
+          additionalProperties: true
+          description: >
+            Доказательство владения идентичностью:
+            - telegram: update_id или signed initData
+            - email/phone: otp
+            - google/apple: id_token
+        profile_hint:
+          type: object
+          additionalProperties: true
+          nullable: true
+
+    RefreshGrant:
+      type: object
+      required: [grant_type, refresh_token]
+      properties:
+        grant_type: { type: string, enum: [refresh_token] }
+        refresh_token: { type: string }
 
     AuthToken:
       type: object
@@ -565,6 +597,7 @@ components:
         access_token: { type: string }
         token_type: { type: string, example: Bearer }
         expires_in: { type: integer, example: 3600 }
+        refresh_token: { type: string }
 
     IdentityAttachRequest:
       type: object
