@@ -1,0 +1,734 @@
+openapi: 3.1.0
+info:
+  title: SyncBuy Public API
+  version: 1.0.0
+  description: >
+    Внешний API для бота/клиентов. Канал-агностичный: ядро ничего не знает о Telegram/вебе.
+    Привязки к каналам выполняются через сущность Identity (см. /me/identities).
+    Покрывает регистрацию/логин, создание покупок, приглашения и участие, задачи,
+    фиксацию (accruals), оплату долгов (через internal payments), отчёты и завершение покупок.
+
+servers:
+  - url: http://api.local/v1
+
+tags:
+  - name: Auth
+  - name: Users
+  - name: Identities
+  - name: Purchases
+  - name: Participants
+  - name: Tasks
+  - name: Distribution
+  - name: Debts
+  - name: Reports
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      operationId: register
+      summary: Зарегистрироваться
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: URL нового пользователя
+              schema: { type: string, format: uri }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      operationId: login
+      summary: Войти в аккаунт (MVP)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthToken' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/account:
+    delete:
+      tags: [Auth]
+      operationId: deleteAccount
+      summary: Удалить аккаунт (soft-delete/архив)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: No Content }
+
+  /me:
+    get:
+      tags: [Users]
+      operationId: getMe
+      summary: Текущий пользователь
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+
+  /me/identities:
+    get:
+      tags: [Identities]
+      operationId: listIdentities
+      summary: Список привязок (канальные идентичности)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Identity' }
+
+    post:
+      tags: [Identities]
+      operationId: attachIdentity
+      summary: Привязать новую идентичность (доказательство владения — в proof)
+      description: >
+        Канал-агностичный интерфейс. Примеры proof:
+        - Telegram: { "link_token": "abc123" } или { "code": "123456" }
+        - Email: { "otp": "123456" }
+        - Phone: { "otp": "123456" }
+        - OAuth: { "id_token": "..." }
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/IdentityAttachRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Identity' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /me/identities/{identityId}:
+    delete:
+      tags: [Identities]
+      operationId: detachIdentity
+      summary: Отвязать идентичность
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: identityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /purchases:
+    post:
+      tags: [Purchases]
+      operationId: createPurchase
+      summary: Создать покупку
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PurchaseCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: URL созданной покупки
+              schema: { type: string, format: uri }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /purchases/{purchaseId}:
+    get:
+      tags: [Purchases]
+      operationId: getPurchase
+      summary: Посмотреть покупку
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /purchases/{purchaseId}/invites:
+    post:
+      tags: [Participants]
+      operationId: sendInvite
+      summary: Отправить приглашение участнику присоединиться к покупке
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InviteCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invite' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /invites/{inviteId}/accept:
+    post:
+      tags: [Participants]
+      operationId: acceptInvite
+      summary: Принять приглашение
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: inviteId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Participant' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /purchases/{purchaseId}/participants:
+    get:
+      tags: [Participants]
+      operationId: listParticipants
+      summary: Получить список участников
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Participant' }
+
+  /purchases/{purchaseId}/participants/{userId}:
+    delete:
+      tags: [Participants]
+      operationId: removeParticipant
+      summary: Удалить участника из покупки (только до фиксации)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /purchases/{purchaseId}/tasks:
+    post:
+      tags: [Tasks]
+      operationId: createTask
+      summary: Добавить задачу (стоимость идёт в общую сумму)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+    get:
+      tags: [Tasks]
+      operationId: listTasks
+      summary: Получить список задач
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Task' }
+
+  /tasks/{taskId}:
+    get:
+      tags: [Tasks]
+      operationId: getTask
+      summary: Получить конкретную задачу по ID
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    delete:
+      tags: [Tasks]
+      operationId: deleteTask
+      summary: Удалить задачу (только до фиксации)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '204': { description: No Content }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /tasks/{taskId}/assign:
+    post:
+      tags: [Tasks]
+      operationId: assignTask
+      summary: Взять задачу на выполнение
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /tasks/{taskId}/done:
+    post:
+      tags: [Tasks]
+      operationId: completeTask
+      summary: Отметить задачу выполненной (фиксирует расход исполнителя)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /purchases/{purchaseId}/lock-distribution:
+    post:
+      tags: [Distribution]
+      operationId: lockDistribution
+      summary: Зафиксировать распределение (accruals → intents)
+      description: Делит расходы каждой выполненной задачи на всех участников, агрегирует по (payer→payee) и создаёт долги (intents). Покупка становится locked.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '201':
+          description: Created (intents сгенерированы)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Intent' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /purchases/{purchaseId}/unlock:
+    post:
+      tags: [Distribution]
+      operationId: unlockDistribution
+      summary: Разблокировать покупку (если нет успешных оплат)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: OK (intents отменены, покупка снова active)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /purchases/{purchaseId}/intents:
+    get:
+      tags: [Debts]
+      operationId: listIntentsByPurchase
+      summary: Список долгов по покупке
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Intent' }
+
+  /intents/{intentId}:
+    get:
+      tags: [Debts]
+      operationId: getIntent
+      summary: Получить конкретный долг
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/IntentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Intent' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /commands/pay:
+    post:
+      tags: [Debts]
+      operationId: commandPay
+      summary: Кнопка «Оплатить долг» (создаёт попытку оплаты через внутренний Payments)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [intent_id, return_url]
+              properties:
+                intent_id: { type: string, format: uuid }
+                return_url: { type: string, format: uri }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [confirmation_url]
+                properties:
+                  confirmation_url: { type: string, format: uri }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /purchases/{purchaseId}/report:
+    post:
+      tags: [Reports]
+      operationId: buildReport
+      summary: Составить отчёт по покупке
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '202':
+          description: Accepted (генерация асинхронно; результат можно получить GET'ом)
+    get:
+      tags: [Reports]
+      operationId: getReport
+      summary: Получить последний отчёт
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Report' }
+
+  /purchases/{purchaseId}/close:
+    post:
+      tags: [Purchases]
+      operationId: closePurchase
+      summary: Завершить покупку (все долги должны быть оплачены)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+components:
+  parameters:
+    PurchaseId:
+      name: purchaseId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IntentId:
+      name: intentId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotenceKey:
+      name: Idempotence-Key
+      in: header
+      required: true
+      description: UUID для идемпотентности создающих операций
+      schema: { type: string, format: uuid }
+
+  schemas:
+    User:
+      type: object
+      required: [id, name, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+
+    RegisterRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+
+    LoginRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, description: "MVP: минимальный логин по имени (каналы линкуются через /me/identities)" }
+
+    AuthToken:
+      type: object
+      required: [access_token, token_type, expires_in]
+      properties:
+        access_token: { type: string }
+        token_type: { type: string, example: Bearer }
+        expires_in: { type: integer, example: 3600 }
+
+    IdentityAttachRequest:
+      type: object
+      required: [provider, proof]
+      properties:
+        provider:
+          type: string
+          enum: [telegram, email, phone, google, apple]
+        proof:
+          type: object
+          additionalProperties: true
+          description: "Доказательство владения аккаунтом канала (см. описание эндпоинта)."
+
+    Identity:
+      type: object
+      required: [id, user_id, provider, provider_user_id, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        user_id: { type: string, format: uuid }
+        provider: { type: string, enum: [telegram, email, phone, google, apple] }
+        provider_user_id: { type: string }
+        is_primary: { type: boolean, default: false }
+        created_at: { type: string, format: date-time }
+
+    PurchaseCreate:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, example: "Вечеринка на работе" }
+
+    Purchase:
+      type: object
+      required: [id, title, status, total_cents, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        status: { type: string, enum: [draft, active, distributed, locked, closed] }
+        total_cents: { type: integer, description: "Сумма задач, влияющая на распределение" }
+        created_at: { type: string, format: date-time }
+
+    InviteCreate:
+      type: object
+      required: [user_ref]
+      properties:
+        user_ref:
+          type: string
+          description: "username/email/phone/внешний идентификатор — обрабатывается адаптером канала"
+
+    Invite:
+      type: object
+      required: [id, purchase_id, to_user_ref, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        purchase_id: { type: string, format: uuid }
+        to_user_ref: { type: string }
+        status: { type: string, enum: [pending, accepted, declined] }
+        created_at: { type: string, format: date-time }
+
+    Participant:
+      type: object
+      required: [user_id, purchase_id, joined_at]
+      properties:
+        user_id: { type: string, format: uuid }
+        purchase_id: { type: string, format: uuid }
+        joined_at: { type: string, format: date-time }
+
+    TaskCreate:
+      type: object
+      required: [title, amount_cents]
+      properties:
+        title: { type: string, example: "Купить торт" }
+        amount_cents: { type: integer, minimum: 1, example: 50000 }
+
+    Task:
+      type: object
+      required: [id, purchase_id, title, amount_cents, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        purchase_id: { type: string, format: uuid }
+        title: { type: string }
+        amount_cents: { type: integer }
+        status: { type: string, enum: [open, assigned, done, deleted] }
+        assignee_id: { type: string, format: uuid, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Intent:
+      type: object
+      required: [id, purchase_id, payer_id, payee_id, amount_cents, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        purchase_id: { type: string, format: uuid }
+        payer_id: { type: string, format: uuid }
+        payee_id: { type: string, format: uuid }
+        amount_cents: { type: integer, minimum: 1 }
+        status: { type: string, enum: [created, awaiting, succeeded, canceled, expired, refunded] }
+        due_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Report:
+      type: object
+      required: [purchase_id, generated_at, totals, intents, expenses]
+      properties:
+        purchase_id: { type: string, format: uuid }
+        generated_at: { type: string, format: date-time }
+        totals:
+          type: object
+          properties:
+            total_cents: { type: integer }
+            participants_count: { type: integer }
+        intents:
+          type: array
+          items:
+            type: object
+            properties:
+              payer_id: { type: string, format: uuid }
+              payee_id: { type: string, format: uuid }
+              amount_cents: { type: integer }
+              status: { type: string }
+        expenses:
+          type: array
+          items:
+            type: object
+            properties:
+              task_id: { type: string, format: uuid }
+              title: { type: string }
+              amount_cents: { type: integer }
+              author_id: { type: string, format: uuid }
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: validation_error }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+        request_id: { type: string }
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Conflict (например, уже зафиксировано/уже оплачено/запрет правок после lock)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
