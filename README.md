@@ -24,7 +24,7 @@ SyncBuy - система для помощи группе людей в орга
 - Notification Service — подписчик доменных событий, отправка в Telegram.
 - Инфраструктура: PostgreSQL (один инстанс, разные схемы), Kafka (events), RabbitMQ (jobs), мониторинг и метрики (Prometheus/Grafana/Jaeger).
 
-[Вставьте здесь схему C2 из docs/diagrams/SyncBuyArchitectureC4.drawio или PNG-рендер.]
+<img width="3321" height="2831" alt="C2_ Container drawio" src="https://github.com/user-attachments/assets/726da7be-8dbb-4c59-9e55-08dba1487b1c" />
 
 Структура репозитория
 ------------------------------------
