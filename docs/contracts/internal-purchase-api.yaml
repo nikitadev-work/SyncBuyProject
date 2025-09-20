@@ -1,0 +1,519 @@
+openapi: 3.1.0
+info:
+  title: Purchase (Public + Internal) API
+  version: 1.2.0
+  description: >
+    Сервис покупок (Purchase). Содержит публичные ручки (через API Gateway) и внутренние ручки для сервис-сервис вызовов.
+    Публичные POST-операции поддерживают идемпотентность через заголовок Idempotence-Key.
+
+servers:
+  - url: http://purchase.internal/v1
+
+tags:
+  - name: Purchases
+  - name: Participants
+  - name: Tasks
+  - name: Distribution
+  - name: Internal
+  - name: Health
+
+security:
+  - bearerAuth: []   # для публичных ручек; внутренние отмечены security: [internalAuth]
+
+paths:
+  # ------------------------ HEALTH ------------------------
+  /internal/health:
+    get:
+      tags: [Health]
+      summary: Health-чек сервиса
+      security:
+        - internalAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  version: { type: string, example: 1.2.0 }
+
+  # ======================== ПУБЛИЧНЫЕ РУЧКИ ========================
+  # ---- Purchases ----
+  /purchases:
+    post:
+      tags: [Purchases]
+      summary: Создать покупку
+      description: Создаёт покупку со статусом `draft`.
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /purchases/{purchaseId}:
+    get:
+      tags: [Purchases]
+      summary: Получить покупку
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    patch:
+      tags: [Purchases]
+      summary: Обновить поля покупки (title/description)
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PurchaseUpdate' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ---- Participants ----
+  /purchases/{purchaseId}/participants:
+    get:
+      tags: [Participants]
+      summary: Список участников покупки
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Participant' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    post:
+      tags: [Participants]
+      summary: Добавить участника
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ParticipantAdd' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Participant' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /purchases/{purchaseId}/participants/{userId}:
+    delete:
+      tags: [Participants]
+      summary: Убрать участника
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  # ---- Tasks ----
+  /purchases/{purchaseId}/tasks:
+    get:
+      tags: [Tasks]
+      summary: Список задач в покупке
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Task' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    post:
+      tags: [Tasks]
+      summary: Создать задачу (расход)
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /purchases/{purchaseId}/tasks/{taskId}:
+    delete:
+      tags: [Tasks]
+      summary: Удалить задачу (до lock)
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '204': { description: No Content }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /purchases/{purchaseId}/tasks/{taskId}/done:
+    post:
+      tags: [Tasks]
+      summary: Отметить задачу выполненной
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  # ---- Distribution / Lifecycle ----
+  /purchases/{purchaseId}/lock-distribution:
+    post:
+      tags: [Distribution]
+      summary: Зафиксировать распределение (lock) и передать intents в Payments
+      description: >
+        Переводит покупку в статус `locked`, вычисляет intents (через Calculation) и создаёт их в Payments.
+        Операция идемпотентна по Idempotence-Key.
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: Locked + intents created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchase: { $ref: '#/components/schemas/Purchase' }
+                  intents_created:
+                    type: integer
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /purchases/{purchaseId}/unlock:
+    post:
+      tags: [Distribution]
+      summary: Снять lock (если нет успешных оплат)
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: Unlocked
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /purchases/{purchaseId}/close:
+    post:
+      tags: [Distribution]
+      summary: Закрыть покупку (все задачи выполнены и оплачены)
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: Closed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Purchase' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  # ======================== ВНУТРЕННЯЯ РУЧКА ========================
+  /internal/purchases/{id}/snapshot:
+    get:
+      tags: [Internal]
+      summary: Снимок покупки для внутренних потребителей (Reporting/Notification)
+      security:
+        - internalAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PurchaseId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PurchaseSnapshot' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+components:
+  # ---------- Parameters ----------
+  parameters:
+    PurchaseId:
+      name: purchaseId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotenceKey:
+      name: Idempotence-Key
+      in: header
+      required: false
+      description: Ключ для идемпотентной обработки создающих/командных POST.
+      schema: { type: string, format: uuid }
+
+  # ---------- Security ----------
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    internalAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # ---------- Responses ----------
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    TooManyRequests:
+      description: Too Many Requests (rate limit exceeded)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  # ---------- Schemas ----------
+  schemas:
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount: { type: number, format: double }
+        currency: { type: string, example: RUB }
+
+    PurchaseStatus:
+      type: string
+      enum: [draft, active, locked, closed]
+
+    PurchaseCreate:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: string, maxLength: 2000 }
+        participants:
+          type: array
+          description: Необязательный первичный набор участников.
+          items:
+            type: object
+            required: [user_id, display_name]
+            properties:
+              user_id: { type: string, format: uuid }
+              display_name: { type: string }
+
+    PurchaseUpdate:
+      type: object
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: string, maxLength: 2000 }
+
+    Purchase:
+      type: object
+      required: [id, owner_id, title, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        owner_id: { type: string, format: uuid }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        status: { $ref: '#/components/schemas/PurchaseStatus' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    Participant:
+      type: object
+      required: [user_id, display_name]
+      properties:
+        user_id: { type: string, format: uuid }
+        display_name: { type: string }
+        role:
+          type: string
+          enum: [member, owner]
+          default: member
+
+    ParticipantAdd:
+      type: object
+      required: [user_id, display_name]
+      properties:
+        user_id: { type: string, format: uuid }
+        display_name: { type: string }
+
+    TaskStatus:
+      type: string
+      enum: [open, assigned, done, deleted]
+
+    TaskCreate:
+      type: object
+      required: [title, cost]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: string, maxLength: 1000 }
+        cost: { $ref: '#/components/schemas/Money' }
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+
+    Task:
+      type: object
+      required: [id, purchase_id, author_id, status, cost, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        purchase_id: { type: string, format: uuid }
+        author_id: { type: string, format: uuid }
+        author_display_name: { type: string, nullable: true }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        cost: { $ref: '#/components/schemas/Money' }
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+        status: { $ref: '#/components/schemas/TaskStatus' }
+        created_at: { type: string, format: date-time }
+
+    PurchaseSnapshot:
+      type: object
+      required: [id, status, owner_id, participants, tasks]
+      properties:
+        id: { type: string, format: uuid }
+        status: { $ref: '#/components/schemas/PurchaseStatus' }
+        owner_id: { type: string, format: uuid }
+        title: { type: string }
+        participants:
+          type: array
+          items:
+            type: object
+            required: [user_id, display_name]
+            properties:
+              user_id: { type: string, format: uuid }
+              display_name: { type: string }
+        tasks:
+          type: array
+          items:
+            type: object
+            required: [id, author_id, status, cost]
+            properties:
+              id: { type: string, format: uuid }
+              author_id: { type: string, format: uuid }
+              author_display_name: { type: string }
+              status: { $ref: '#/components/schemas/TaskStatus' }
+              cost: { $ref: '#/components/schemas/Money' }
+              title: { type: string }
+              description: { type: string, nullable: true }
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          examples: [validation_error, unauthorized, not_found, conflict, forbidden]
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

@@ -1,0 +1,195 @@
+openapi: 3.1.0
+info:
+  title: Reporting (Internal) API
+  version: 1.1.0
+  description: >
+    Сервис отчётов для SyncBuy (внутренний). Делает асинхронную генерацию итогового отчёта по покупке
+    и отдаёт статус/ссылку на результат. Запуск идемпотентен через заголовок Idempotence-Key.
+
+servers:
+  - url: http://reporting.internal/v1
+
+tags:
+  - name: Reports
+  - name: Health
+
+security:
+  - internalAuth: []
+
+paths:
+  /internal/health:
+    get:
+      tags: [Health]
+      summary: Health-чек сервиса
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  version: { type: string, example: 1.1.0 }
+
+  /internal/reports/generate:
+    post:
+      tags: [Reports]
+      summary: Запустить генерацию отчёта по покупке (асинхронно)
+      description: >
+        Ставит задачу на генерацию отчёта. Операция идемпотентна — при повторе с тем же Idempotence-Key
+        вернёт тот же job_id для данного purchase_id и format.
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRequest'
+            examples:
+              json_example:
+                summary: JSON-отчёт
+                value: { purchase_id: "c6d3b0bf-0a0b-4a2e-9d13-1181b3a7b2f1", format: "json" }
+              csv_example:
+                summary: CSV-отчёт
+                value: { purchase_id: "c6d3b0bf-0a0b-4a2e-9d13-1181b3a7b2f1", format: "csv" }
+      responses:
+        '202':
+          description: Accepted (задача поставлена)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+        '400':
+          description: Bad Request (валидация входных данных)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /internal/reports/{purchase_id}:
+    get:
+      tags: [Reports]
+      summary: Получить статус и ссылку на отчёт по покупке
+      description: >
+        Возвращает текущий статус и (если готов) ссылку на отчёт.
+      parameters:
+        - name: purchase_id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: format
+          in: query
+          required: false
+          description: Если не указан, вернётся последний доступный формат.
+          schema:
+            $ref: '#/components/schemas/ReportFormat'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportStatusResponse'
+        '404':
+          description: Not Found (ещё не запускали отчёт и записей нет)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+components:
+  parameters:
+    IdempotenceKey:
+      name: Idempotence-Key
+      in: header
+      required: false
+      description: >
+        Ключ идемпотентности (UUID). Повторный запуск с тем же ключом и теми же purchase_id/format вернёт тот же job_id.
+      schema: { type: string, format: uuid }
+
+  securitySchemes:
+    internalAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ReportFormat:
+      type: string
+      enum: [json, csv]
+      example: json
+
+    ReportState:
+      type: string
+      enum: [queued, running, ready, failed]
+      example: queued
+
+    GenerateRequest:
+      type: object
+      required: [purchase_id]
+      properties:
+        purchase_id:
+          type: string
+          format: uuid
+        format:
+          $ref: '#/components/schemas/ReportFormat'
+        force:
+          type: boolean
+          default: false
+          description: >
+            Форсировать пересоздание, даже если отчёт уже готов (идемпотентность сохраняется за счёт нового Idempotence-Key).
+
+    GenerateResponse:
+      type: object
+      required: [job_id, purchase_id, format, state]
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        purchase_id:
+          type: string
+          format: uuid
+        format:
+          $ref: '#/components/schemas/ReportFormat'
+        state:
+          $ref: '#/components/schemas/ReportState'
+        estimated_ready_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    ReportStatusResponse:
+      type: object
+      required: [purchase_id, state]
+      properties:
+        purchase_id:
+          type: string
+          format: uuid
+        format:
+          $ref: '#/components/schemas/ReportFormat'
+        state:
+          $ref: '#/components/schemas/ReportState'
+        url:
+          type: string
+          nullable: true
+          description: >
+            Прямая ссылка на готовый отчёт (если state=ready). Может быть pre-signed URL из хранилища.
+        updated_at:
+          type: string
+          format: date-time
+        error:
+          type: object
+          nullable: true
+          description: Диагностика при state=failed.
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: { type: object, additionalProperties: true }
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

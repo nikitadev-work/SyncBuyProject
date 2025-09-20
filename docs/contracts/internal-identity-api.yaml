@@ -1,0 +1,259 @@
+openapi: 3.1.0
+info:
+  title: Identity (Public + Internal) API
+  version: 1.1.0
+  description: >
+    Сервис Identity/Auth. Содержит Публичные ручки (логин/регистрация, /me)
+    и Внутренние ручки (/internal/*) для сервис-сервис вызовов.
+servers:
+  - url: http://identity.internal/v1
+tags:
+  - name: Auth
+  - name: Users
+  - name: JWKS
+security:
+  - internalAuth: []
+
+paths:
+  # ---------- ПУБЛИЧНЫЕ РУЧКИ (используются через API Gateway) ----------
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Зарегистрироваться (password или внешняя идентичность)
+      description: Создаёт пользователя или возвращает существующего (идемпотентно) и выдаёт JWT.
+      security: []   # публичная точка (без internalAuth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/RegisterPassword'
+                - $ref: '#/components/schemas/RegisterExternal'
+      responses:
+        '201':
+          description: Created (или Idempotent)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthToken' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /auth/token:
+    post:
+      tags: [Auth]
+      summary: Получить JWT токен (логин)
+      description: >
+        grant_type=password | external_identity | refresh_token.
+        Для external_identity: если привязка не найдена — ошибка EXT_IDENTITY_NOT_FOUND.
+      security: []   # публичная точка (без internalAuth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PasswordGrant'
+                - $ref: '#/components/schemas/ExternalGrantLogin'
+                - $ref: '#/components/schemas/RefreshGrant'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthToken' }
+        '404':
+          description: External identity not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /me:
+    get:
+      tags: [Users]
+      summary: Профиль текущего пользователя
+      description: Доступен по публичному Bearer JWT (через Gateway).
+      security: []   # публичная (проверка JWT на Gateway)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ---------- ВНУТРЕННИЕ РУЧКИ (для сервисов) ----------
+  /internal/users/{id}:
+    get:
+      tags: [Users]
+      summary: Получить профиль пользователя по user_id (internal)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /internal/users/resolve:
+    post:
+      tags: [Users]
+      summary: Разрешить список user_id в профили (internal)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  maxItems: 1000
+                  items: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items: { $ref: '#/components/schemas/UserProfile' }
+
+  /internal/jwks:
+    get:
+      tags: [JWKS]
+      summary: Текущие публичные ключи (для проверки JWT сервисами)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items: { type: object, additionalProperties: true }
+
+components:
+  securitySchemes:
+    internalAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+
+    User:
+      type: object
+      required: [id, name, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+
+    RegisterPassword:
+      type: object
+      required: [name, password]
+      properties:
+        name: { type: string }
+        password: { type: string, format: password }
+
+    RegisterExternal:
+      type: object
+      required: [provider, proof]
+      properties:
+        provider:
+          type: string
+          enum: [telegram, email, phone, google, apple]
+        proof:
+          type: object
+          additionalProperties: true
+        profile_hint:
+          type: object
+          additionalProperties: true
+          nullable: true
+
+    PasswordGrant:
+      type: object
+      required: [grant_type, name, password]
+      properties:
+        grant_type: { type: string, enum: [password] }
+        name: { type: string }
+        password: { type: string, format: password }
+
+    ExternalGrantLogin:
+      type: object
+      required: [grant_type, provider, proof]
+      properties:
+        grant_type: { type: string, enum: [external_identity] }
+        provider:
+          type: string
+          enum: [telegram, email, phone, google, apple]
+        proof:
+          type: object
+          additionalProperties: true
+
+    RefreshGrant:
+      type: object
+      required: [grant_type, refresh_token]
+      properties:
+        grant_type: { type: string, enum: [refresh_token] }
+        refresh_token: { type: string }
+
+    AuthToken:
+      type: object
+      required: [access_token, token_type, expires_in]
+      properties:
+        access_token: { type: string }
+        token_type: { type: string, example: Bearer }
+        expires_in: { type: integer, example: 3600 }
+        refresh_token: { type: string }
+
+    # Внутренние DTO
+    UserProfile:
+      type: object
+      required: [user_id, display_name, status]
+      properties:
+        user_id: { type: string, format: uuid }
+        display_name: { type: string }
+        status:
+          type: string
+          enum: [active, blocked, deleted]
+        avatar_url:
+          type: string
+          nullable: true
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, examples: [validation_error, unauthorized, not_found, EXT_IDENTITY_NOT_FOUND] }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

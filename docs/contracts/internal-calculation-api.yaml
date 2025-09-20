@@ -1,0 +1,253 @@
+openapi: 3.1.0
+info:
+  title: Calculation (Internal) API
+  version: 1.1.0
+  description: >
+    Сервис расчёта распределения расходов в платёжные намерения (intents).
+    Вариант MVP — стратегия v1 *per-expense accruals* (каждый расход делится между участниками поровну,
+    исключая автора расхода; долги по одному направлению агрегируются).
+servers:
+  - url: http://calculation.internal/v1
+tags:
+  - name: Calculation
+  - name: Health
+security:
+  - internalAuth: []
+
+paths:
+  /internal/health:
+    get:
+      tags: [Health]
+      summary: Health-чек сервиса
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  version: { type: string, example: 1.1.0 }
+
+  /internal/calc/distribute:
+    post:
+      tags: [Calculation]
+      summary: Рассчитать intents по списку расходов и участников
+      description: >
+        Stateless-операция, ничего не пишет в БД. Стратегия по умолчанию — v1 *per-expense accruals*.
+        Результат детерминирован при одинаковом входе и опциях.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CalcRequest' }
+            examples:
+              simple:
+                summary: Простой кейс
+                value:
+                  purchase_id: "a6d9e2b1-9b1a-4c2b-9a0d-0f9c2b5e1c11"
+                  options:
+                    rounding_mode: banker's
+                    min_unit: 0.01
+                  participants:
+                    - { user_id: "11111111-1111-1111-1111-111111111111" }
+                    - { user_id: "22222222-2222-2222-2222-222222222222" }
+                    - { user_id: "33333333-3333-3333-3333-333333333333" }
+                  expenses:
+                    - id: "e1"
+                      author_id: "11111111-1111-1111-1111-111111111111"
+                      cost: { amount: 900.00, currency: "RUB" }
+                    - id: "e2"
+                      author_id: "22222222-2222-2222-2222-222222222222"
+                      cost: { amount: 300.00, currency: "RUB" }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CalcResponse' }
+              examples:
+                result:
+                  value:
+                    purchase_id: "a6d9e2b1-9b1a-4c2b-9a0d-0f9c2b5e1c11"
+                    strategy: "accruals/v1"
+                    options:
+                      rounding_mode: "banker's"
+                      min_unit: 0.01
+                    totals:
+                      currency: "RUB"
+                      expenses_sum: 1200
+                      transfers_sum: 1200
+                      pairs: 2
+                    intents:
+                      - { payer_id: "33333333-3333-3333-3333-333333333333", payee_id: "11111111-1111-1111-1111-111111111111", amount: { amount: 300, currency: RUB } }
+                      - { payer_id: "33333333-3333-3333-3333-333333333333", payee_id: "22222222-2222-2222-2222-222222222222", amount: { amount: 100, currency: RUB } }
+                      - { payer_id: "22222222-2222-2222-2222-222222222222", payee_id: "11111111-1111-1111-1111-111111111111", amount: { amount: 300, currency: RUB } }
+                    diagnostics:
+                      by_expense:
+                        - id: "e1"
+                          shares:
+                            - { user_id: "22222222-2222-2222-2222-222222222222", amount: 450 }
+                            - { user_id: "33333333-3333-3333-3333-333333333333", amount: 450 }
+                        - id: "e2"
+                          shares:
+                            - { user_id: "11111111-1111-1111-1111-111111111111", amount: 150 }
+                            - { user_id: "33333333-3333-3333-3333-333333333333", amount: 150 }
+        '400':
+          description: Bad Request (валидация входных данных)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+components:
+  securitySchemes:
+    internalAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount:
+          type: number
+          format: double
+          description: Денежная сумма в валюте (десятичная, не integer центы).
+        currency:
+          type: string
+          description: ISO-валюта (например, RUB, KZT, USD).
+          example: RUB
+
+    Participant:
+      type: object
+      required: [user_id]
+      properties:
+        user_id: { type: string, format: uuid }
+
+    Expense:
+      type: object
+      required: [id, author_id, cost]
+      properties:
+        id:
+          type: string
+          description: Локальный идентификатор расхода в пределах запроса.
+          example: "e1"
+        author_id:
+          type: string
+          format: uuid
+          description: Кто оплатил этот расход.
+        cost:
+          $ref: '#/components/schemas/Money'
+        include_author:
+          type: boolean
+          default: false
+          description: >
+            Включать ли автора в делёж для этого расхода.
+            По умолчанию автор НЕ участвует (классическая модель «остальные должны автору»).
+        custom_shares:
+          type: array
+          description: >
+            Необязательное переопределение долей (в абсолютных суммах).
+            Если задано — суммы должны совпадать с cost.amount; author_id может присутствовать/отсутствовать.
+          items:
+            type: object
+            required: [user_id, amount]
+            properties:
+              user_id: { type: string, format: uuid }
+              amount: { type: number, format: double }
+
+    Options:
+      type: object
+      properties:
+        rounding_mode:
+          type: string
+          description: Режим округления на микрошаге распределения.
+          enum: ["banker's", "half-up", "floor", "ceil"]
+          default: "banker's"
+        min_unit:
+          type: number
+          format: double
+          description: Минимальная денежная гранулярность (например, 0.01 для RUB).
+          default: 0.01
+        strategy:
+          type: string
+          description: Явный выбор стратегии (для будущих версий).
+          enum: ["accruals/v1"]
+          default: "accruals/v1"
+
+    Intent:
+      type: object
+      required: [payer_id, payee_id, amount]
+      properties:
+        payer_id: { type: string, format: uuid }
+        payee_id: { type: string, format: uuid }
+        amount: { $ref: '#/components/schemas/Money' }
+
+    CalcRequest:
+      type: object
+      required: [purchase_id, participants, expenses]
+      properties:
+        purchase_id: { type: string, format: uuid }
+        participants:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Participant' }
+        expenses:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Expense' }
+        options:
+          $ref: '#/components/schemas/Options'
+
+    CalcResponse:
+      type: object
+      required: [purchase_id, strategy, options, intents]
+      properties:
+        purchase_id: { type: string, format: uuid }
+        strategy:
+          type: string
+          example: "accruals/v1"
+        options:
+          $ref: '#/components/schemas/Options'
+        intents:
+          type: array
+          items: { $ref: '#/components/schemas/Intent' }
+        totals:
+          type: object
+          description: Агрегаты для валидации и телеметрии.
+          properties:
+            currency: { type: string, example: RUB }
+            expenses_sum: { type: number, format: double }
+            transfers_sum: { type: number, format: double }
+            pairs: { type: integer, description: "Количество направлений payer→payee" }
+        diagnostics:
+          type: object
+          nullable: true
+          description: Отладочная раскладка по расходам/долям (можно отключить в будущем).
+          properties:
+            by_expense:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: string }
+                  shares:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id: { type: string, format: uuid }
+                        amount: { type: number, format: double }
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          examples: [validation_error, currency_mismatch, empty_participants, empty_expenses]
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

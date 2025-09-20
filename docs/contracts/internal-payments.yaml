@@ -1,0 +1,440 @@
+openapi: 3.1.0
+info:
+  title: Payments (Public + Internal) API
+  version: 1.2.0
+  description: >
+    Сервис платежей для SyncBuy. Публичные ручки (через API Gateway) и внутренние ручки для сервис-сервис
+    взаимодействий. Публичные/командные POST поддерживают идемпотентность через заголовок Idempotence-Key.
+servers:
+  - url: http://payments.internal/v1
+
+tags:
+  - name: Health
+  - name: Commands
+  - name: Attempts
+  - name: Intents
+  - name: Refunds
+  - name: Ledger
+  - name: Webhooks
+  - name: Internal
+
+security:
+  - bearerAuth: []    # для публичных ручек
+paths:
+  # ------------------------ HEALTH ------------------------
+  /internal/health:
+    get:
+      tags: [Health]
+      summary: Health-чек сервиса
+      security:
+        - internalAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  version: { type: string, example: 1.2.0 }
+
+  # ======================== ПУБЛИЧНЫЕ РУЧКИ ========================
+  # ---- Команды оплаты ----
+  /commands/pay:
+    post:
+      tags: [Commands]
+      summary: Создать платёжную попытку (Payment Attempt) для intent
+      description: >
+        Создаёт попытку оплаты указанного intent и возвращает данные для подтверждения (например, confirmation_url).
+        Операция идемпотентна по заголовку Idempotence-Key.
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PayCommand' }
+            examples:
+              yookassa_card:
+                value:
+                  intent_id: "8d9f7f2e-2f3a-4f42-9b1a-7a9e7d9a1e11"
+                  method: "card"
+                  return_url: "https://app.local/return"
+      responses:
+        '200':
+          description: OK (попытка создана)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AttemptCreated' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  # ---- Чтение попыток/интентов (публично) ----
+  /attempts/{attemptId}:
+    get:
+      tags: [Attempts]
+      summary: Получить статус платёжной попытки
+      parameters:
+        - $ref: '#/components/parameters/AttemptId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Attempt' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /intents/{intentId}:
+    get:
+      tags: [Intents]
+      summary: Получить intent
+      parameters:
+        - $ref: '#/components/parameters/IntentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Intent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ======================== ВЕБХУК ПРОВАЙДЕРА ========================
+  /webhooks/yookassa:
+    post:
+      tags: [Webhooks]
+      summary: Webhook от ЮKassa
+      description: >
+        Принимает события провайдера оплаты. Подпись проверяется по HMAC.
+        Обработка идемпотентна по уникальному event_id провайдера (вторичная защита — уникальность в БД).
+      security: []   # публичный endpoint, защиту реализует HMAC-подпись на уровне приложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+            examples:
+              payment_succeeded:
+                value:
+                  event: "payment.succeeded"
+                  object:
+                    id: "2de2f7d2-000f-5000-9000-1a2b3c4d5e6f"
+                    status: "succeeded"
+                    amount: { value: "100.00", currency: "RUB" }
+                  id: "evt_0123456789abcdef"   # event_id
+      responses:
+        '200':
+          description: OK (принято)
+        '400':
+          description: Bad signature / invalid payload
+
+  # ======================== ВНУТРЕННИЕ РУЧКИ ========================
+  /internal/intents/bulk:
+    post:
+      tags: [Intents, Internal]
+      summary: Массовое создание intents по покупке (после lock-distribution)
+      security:
+        - internalAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [purchase_id, intents]
+              properties:
+                purchase_id: { type: string, format: uuid }
+                intents:
+                  type: array
+                  items: { $ref: '#/components/schemas/IntentIn' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchase_id: { type: string, format: uuid }
+                  intents:
+                    type: array
+                    items: { $ref: '#/components/schemas/Intent' }
+
+  /internal/intents/{intentId}:
+    get:
+      tags: [Intents, Internal]
+      summary: Получить intent (internal)
+      security:
+        - internalAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IntentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Intent' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /internal/intents/{intentId}/cancel:
+    post:
+      tags: [Intents, Internal]
+      summary: Отменить intent (например, при unlock покупки)
+      security:
+        - internalAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IntentId'
+        - $ref: '#/components/parameters/IdempotenceKey'
+      responses:
+        '200':
+          description: Canceled
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Intent' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /internal/refunds:
+    post:
+      tags: [Refunds, Internal]
+      summary: Инициировать возврат по intent или attempt
+      security:
+        - internalAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdempotenceKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefundRequest' }
+      responses:
+        '202':
+          description: Accepted (возврат запущен)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refund_id: { type: string, format: uuid }
+
+  /internal/ledger/entries:
+    get:
+      tags: [Ledger, Internal]
+      summary: Получить строки книги (ledger)
+      security:
+        - internalAuth: []
+      parameters:
+        - name: purchase_id
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: intent_id
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 1000, default: 200 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/LedgerEntry' }
+
+components:
+  # ---------- Parameters ----------
+  parameters:
+    IdempotenceKey:
+      name: Idempotence-Key
+      in: header
+      required: false
+      description: Ключ для идемпотентной обработки создающих/командных POST.
+      schema: { type: string, format: uuid }
+    AttemptId:
+      name: attemptId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IntentId:
+      name: intentId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  # ---------- Security ----------
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    internalAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # ---------- Responses ----------
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    TooManyRequests:
+      description: Too Many Requests (rate limit exceeded)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  # ---------- Schemas ----------
+  schemas:
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount: { type: number, format: double }
+        currency: { type: string, example: RUB }
+
+    IntentStatus:
+      type: string
+      enum: [created, awaiting, succeeded, canceled, expired, refunded]
+
+    AttemptStatus:
+      type: string
+      enum: [created, pending_confirmation, succeeded, canceled, failed]
+
+    IntentIn:
+      type: object
+      required: [payer_id, payee_id, amount]
+      properties:
+        payer_id: { type: string, format: uuid }
+        payee_id: { type: string, format: uuid }
+        amount: { $ref: '#/components/schemas/Money' }
+        meta:
+          type: object
+          additionalProperties: true
+
+    Intent:
+      type: object
+      required: [id, payer_id, payee_id, amount, status]
+      properties:
+        id: { type: string, format: uuid }
+        purchase_id: { type: string, format: uuid, nullable: true }
+        payer_id: { type: string, format: uuid }
+        payee_id: { type: string, format: uuid }
+        amount: { $ref: '#/components/schemas/Money' }
+        status: { $ref: '#/components/schemas/IntentStatus' }
+        created_at: { type: string, format: date-time }
+
+    Attempt:
+      type: object
+      required: [id, intent_id, status, provider]
+      properties:
+        id: { type: string, format: uuid }
+        intent_id: { type: string, format: uuid }
+        status: { $ref: '#/components/schemas/AttemptStatus' }
+        provider: { type: string, example: "yookassa" }
+        provider_ref: { type: string, nullable: true, description: "ID объекта у провайдера" }
+        amount: { $ref: '#/components/schemas/Money' }
+        confirmation_url: { type: string, nullable: true }
+        error:
+          type: object
+          nullable: true
+          properties:
+            code: { type: string }
+            message: { type: string }
+
+    PayCommand:
+      type: object
+      required: [intent_id]
+      properties:
+        intent_id: { type: string, format: uuid }
+        method:
+          type: string
+          description: Способ оплаты (логический), маппится на провайдера.
+          enum: [card, sbp, wallet]
+          default: card
+        return_url:
+          type: string
+          description: Куда вернётся пользователь после подтверждения (если нужно).
+        provider_opts:
+          type: object
+          additionalProperties: true
+          description: Прозрачные опции для конкретного провайдера.
+
+    AttemptCreated:
+      type: object
+      required: [attempt_id, intent_id, status]
+      properties:
+        attempt_id: { type: string, format: uuid }
+        intent_id: { type: string, format: uuid }
+        status: { $ref: '#/components/schemas/AttemptStatus' }
+        confirmation_url: { type: string, nullable: true }
+        provider: { type: string, example: "yookassa" }
+
+    RefundRequest:
+      type: object
+      properties:
+        intent_id: { type: string, format: uuid }
+        attempt_id: { type: string, format: uuid }
+        amount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: >
+            Необязательная частичная сумма. Если не указана — возврат на всю доступную сумму.
+        reason: { type: string }
+      oneOf:
+        - required: [intent_id]
+        - required: [attempt_id]
+
+    LedgerEntry:
+      type: object
+      required: [entry_id, ts, account, amount, side]
+      properties:
+        entry_id: { type: string, format: uuid }
+        ts: { type: string, format: date-time }
+        account: { type: string }
+        amount: { $ref: '#/components/schemas/Money' }
+        side: { type: string, enum: [debit, credit] }
+        intent_id: { type: string, format: uuid, nullable: true }
+        attempt_id: { type: string, format: uuid, nullable: true }
+        purchase_id: { type: string, format: uuid, nullable: true }
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          examples: [validation_error, unauthorized, not_found, conflict, too_many_requests]
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
