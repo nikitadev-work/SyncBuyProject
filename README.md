@@ -26,7 +26,7 @@ SyncBuy - система для помощи группе людей в орга
 
 [Схема C2 (drawio)](docs/Architecture-C4-Diagram.drawio)
 
-<img width="3321" height="2831" alt="C2_ Container drawio" src="https://github.com/user-attachments/assets/726da7be-8dbb-4c59-9e55-08dba1487b1c" />
+<img width="1881" height="1373" alt="C2_ Container drawio-2" src="https://github.com/user-attachments/assets/f2b884b0-b0df-45a7-ae5c-7fe9425a5df4" />
 
 Структура репозитория
 ------------------------------------
