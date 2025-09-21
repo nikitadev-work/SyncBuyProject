@@ -42,6 +42,7 @@ README.txt
 Схема базы данных
 ------------------------------------
 
+<img width="1039" height="1298" alt="SyncBuy-DB-Diagram (1)" src="https://github.com/user-attachments/assets/1f5d2603-2156-47e7-aa3a-3c8214adc1fe" />
 
 
 Аутентификация (MVP)
