@@ -7,8 +7,8 @@ run-multiple-swagger:
 	  -v "$$PWD/docs/contracts:/usr/share/nginx/html/spec" \
 	  swaggerapi/swagger-ui
 
-up:
+compose-dev-up:
 	docker compose -f docker-compose.dev.yml up -d
 
-down:
+compose-dev-down:
 	docker compose -f docker-compose.dev.yml down -v
