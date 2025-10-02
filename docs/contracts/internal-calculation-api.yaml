@@ -141,43 +141,7 @@ components:
           description: Кто оплатил этот расход.
         cost:
           $ref: '#/components/schemas/Money'
-        include_author:
-          type: boolean
-          default: false
-          description: >
-            Включать ли автора в делёж для этого расхода.
-            По умолчанию автор НЕ участвует (классическая модель «остальные должны автору»).
-        custom_shares:
-          type: array
-          description: >
-            Необязательное переопределение долей (в абсолютных суммах).
-            Если задано — суммы должны совпадать с cost.amount; author_id может присутствовать/отсутствовать.
-          items:
-            type: object
-            required: [user_id, amount]
-            properties:
-              user_id: { type: string, format: uuid }
-              amount: { type: number, format: double }
-
-    Options:
-      type: object
-      properties:
-        rounding_mode:
-          type: string
-          description: Режим округления на микрошаге распределения.
-          enum: ["banker's", "half-up", "floor", "ceil"]
-          default: "banker's"
-        min_unit:
-          type: number
-          format: double
-          description: Минимальная денежная гранулярность (например, 0.01 для RUB).
-          default: 0.01
-        strategy:
-          type: string
-          description: Явный выбор стратегии (для будущих версий).
-          enum: ["accruals/v1"]
-          default: "accruals/v1"
-
+          
     Intent:
       type: object
       required: [payer_id, payee_id, amount]
@@ -204,44 +168,14 @@ components:
 
     CalcResponse:
       type: object
-      required: [purchase_id, strategy, options, intents]
+      required: [purchase_id, intents]
       properties:
         purchase_id: { type: string, format: uuid }
-        strategy:
-          type: string
-          example: "accruals/v1"
-        options:
-          $ref: '#/components/schemas/Options'
+
         intents:
           type: array
           items: { $ref: '#/components/schemas/Intent' }
-        totals:
-          type: object
-          description: Агрегаты для валидации и телеметрии.
-          properties:
-            currency: { type: string, example: RUB }
-            expenses_sum: { type: number, format: double }
-            transfers_sum: { type: number, format: double }
-            pairs: { type: integer, description: "Количество направлений payer→payee" }
-        diagnostics:
-          type: object
-          nullable: true
-          description: Отладочная раскладка по расходам/долям (можно отключить в будущем).
-          properties:
-            by_expense:
-              type: array
-              items:
-                type: object
-                properties:
-                  id: { type: string }
-                  shares:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        user_id: { type: string, format: uuid }
-                        amount: { type: number, format: double }
-
+        
     Error:
       type: object
       required: [code, message]

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package calculation;
+
+import "google/api/annotations.proto";
+import "google/api/http.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/nikitadev-work/SyncBuyProject/services/calculation/proto-codegen;calcpb";
+
+service CalculationService {
+  rpc CalculateDistribution(CalcRequest) returns (CalcResponse) {
+    option (google.api.http) = {
+      post: "/internal/calculation/distribute"
+      body: "*"
+    };
+  }
+
+  rpc Health(google.protobuf.Empty) returns (HealthResponse) {
+    option (google.api.http) = {get: "/internal/health"};
+  }
+}
+
+message Money {
+  int64 amount = 1;
+  string currency = 2;
+}
+
+message Participant {
+  string user_id = 1;
+}
+
+message Expense {
+  string id = 1;
+  string author_id = 2;
+  Money cost = 3;
+}
+
+message Intent {
+  string payer_id = 1;
+  string payee_id = 2;
+  Money amount = 3;
+}
+
+message CalcRequest {
+  string purchase_id = 1;
+  repeated Participant participants = 2;
+  repeated Expense expenses = 3;
+}
+
+message CalcResponse {
+  string purchase_id = 1;
+  repeated Intent intents = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+}
