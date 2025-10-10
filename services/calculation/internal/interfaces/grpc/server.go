@@ -1,8 +1,9 @@
-package interfaces
+package grpcserver
 
 import (
 	"context"
 
+	"calculation/internal/infra/logger"
 	uc "calculation/internal/usecase"
 	pb "calculation/proto-codegen/calculation"
 
@@ -11,7 +12,16 @@ import (
 
 type CalculationServer struct {
 	pb.UnimplementedCalculationServiceServer
-	usecase uc.Usecase
+	usecase uc.CalculationUsecase
+
+	logger logger.LoggerInterface
+}
+
+func New(usecase uc.CalculationUsecase, logger logger.LoggerInterface) *CalculationServer {
+	return &CalculationServer{
+		usecase: usecase,
+		logger:  logger,
+	}
 }
 
 func (s *CalculationServer) CalculateDistribution(ctx context.Context, in *pb.CalcRequest) (*pb.CalcResponse, error) {

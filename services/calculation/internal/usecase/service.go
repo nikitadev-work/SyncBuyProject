@@ -8,6 +8,8 @@ import (
 type Usecase struct {
 }
 
+var _ CalculationUsecase = (*Usecase)(nil)
+
 func NewUsecase() *Usecase {
 	return &Usecase{}
 }

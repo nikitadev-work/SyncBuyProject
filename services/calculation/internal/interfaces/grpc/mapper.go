@@ -1,4 +1,4 @@
-package interfaces
+package grpcserver
 
 import (
 	dm "calculation/internal/domain"
@@ -11,7 +11,10 @@ import (
 func ConvertCalcReqDataToInternalDTO(input *pb.CalcRequest) (*uc.CalculationInputDTO, error) {
 	participants := []dm.Participant{}
 	for _, v := range input.Participants {
-		id, _ := uuid.Parse(v.UserId)
+		id, err := uuid.Parse(v.UserId)
+		if err != nil {
+			return nil, ErrToStatus(err)
+		}
 		newParticipant := dm.NewParticipant(id)
 
 		participants = append(participants, *newParticipant)
@@ -20,7 +23,10 @@ func ConvertCalcReqDataToInternalDTO(input *pb.CalcRequest) (*uc.CalculationInpu
 	expenses := []dm.Expense{}
 	for _, v := range input.Expenses {
 		id, _ := uuid.Parse(v.Id)
-		authorID, _ := uuid.Parse(v.AuthorId)
+		authorID, err := uuid.Parse(v.AuthorId)
+		if err != nil {
+			return nil, ErrToStatus(err)
+		}
 		money, err := dm.NewMoney(v.Cost.Amount, v.Cost.Currency)
 		if err != nil {
 			return nil, err

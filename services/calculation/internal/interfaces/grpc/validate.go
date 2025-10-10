@@ -1,4 +1,4 @@
-package interfaces
+package grpcserver
 
 import (
 	"calculation/internal/domain"
