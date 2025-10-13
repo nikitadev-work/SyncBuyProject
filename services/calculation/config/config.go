@@ -10,21 +10,26 @@ type Config struct {
 	App     App
 	Log     Log
 	GRPC    GRPC
+	HTTP    HTTP
 	Swagger Swagger
 	Metrics Metrics
 }
 
 type App struct {
-	Name    string `env:"APP_NAME, required"`
-	Version string `env:"APP_VERSION, required"`
+	Name    string `env:"APP_NAME,required"`
+	Version string `env:"APP_VERSION,required"`
 }
 
 type Log struct {
-	Level string `env:"LOG_LEVEL, required"`
+	Level string `env:"LOG_LEVEL,required"`
 }
 
 type GRPC struct {
-	Port string `env:"GRPC_PORT, required"`
+	Port string `env:"GRPC_PORT,required"`
+}
+
+type HTTP struct {
+	Port string `env:"HTTP_PORT,required"`
 }
 
 type Swagger struct {

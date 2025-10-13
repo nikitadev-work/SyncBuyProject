@@ -1,1 +1,12 @@
-FROM go
+FROM golang:latest
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o calculation-service ./cmd/
+
+CMD ["./calculation-service"]
