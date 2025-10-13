@@ -14,6 +14,8 @@ import (
 	"sync"
 	"time"
 
+	"calculation/internal/infra/metrics"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 )
@@ -28,6 +30,8 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	)
 
 	l.Info("start configuration", nil)
+
+	metrics.InitMetrics()
 
 	//grpc
 	uc := usecase.NewUsecase()

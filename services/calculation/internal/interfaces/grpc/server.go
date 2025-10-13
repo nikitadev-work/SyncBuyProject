@@ -8,6 +8,8 @@ import (
 	uc "calculation/internal/usecase"
 	pb "calculation/proto-codegen/calculation"
 
+	"calculation/internal/infra/metrics"
+
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -27,6 +29,10 @@ func New(usecase uc.CalculationUsecase, logger logger.LoggerInterface) *Calculat
 
 func (s *CalculationServer) CalculateDistribution(ctx context.Context, in *pb.CalcRequest) (*pb.CalcResponse, error) {
 	start := time.Now()
+	defer func() {
+		metrics.IncGRPCRequestsTotal("CalculateDistribution")
+	}()
+
 	s.logger.Info("calc request started", map[string]any{
 		"method":       "CalculateDistribution",
 		"participants": len(in.Participants),
