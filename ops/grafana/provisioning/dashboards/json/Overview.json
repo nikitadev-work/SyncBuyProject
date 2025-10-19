@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 4,
   "links": [],
   "panels": [
     {
@@ -44,6 +44,12 @@
           "color": {
             "mode": "thresholds"
           },
+          "links": [
+            {
+              "title": "Go Service Metrics",
+              "url": "/d/CgCw8jKZz/go-metrics?var-job=$service&var-instance=All&from=${__from}&to=${__to}"
+            }
+          ],
           "mappings": [
             {
               "options": {
@@ -179,7 +185,76 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*/"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Grafana Metrics",
+                    "url": "/d/lsQH6-bVk/grafana?from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^loki$"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Loki Metrics",
+                    "url": "/d/7ecZpUkRk/loki-logs?var-container=loki&var-search=&from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^prometheus$"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Prometheus Metrics",
+                    "url": "/d/42c2954d-672a-4fbb-bea5-e9dacabb5f4d/prometheus?from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^promtail$"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Promtail Metrics",
+                    "url": "/d/promtailntfc0a/promtail-monitoring?var-job=promtail&var-instance=promtail:9080&var-label_name=service&var-label_value=promtail&from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 7,
@@ -214,7 +289,7 @@
         {
           "editorMode": "code",
           "expr": "max by (job) (up{job=~\"$infrastructure\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
         }
