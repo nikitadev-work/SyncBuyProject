@@ -1,0 +1,194 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "calculation/calculation.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "CalculationService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/internal/calculation/distribute": {
+      "post": {
+        "operationId": "CalculationService_CalculateDistribution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/calculationCalcResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/calculationCalcRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CalculationService"
+        ]
+      }
+    },
+    "/internal/health": {
+      "get": {
+        "operationId": "CalculationService_Health",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/calculationHealthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "CalculationService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "calculationCalcRequest": {
+      "type": "object",
+      "properties": {
+        "purchaseId": {
+          "type": "string"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/calculationParticipant"
+          }
+        },
+        "expenses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/calculationExpense"
+          }
+        }
+      }
+    },
+    "calculationCalcResponse": {
+      "type": "object",
+      "properties": {
+        "intents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/calculationIntent"
+          }
+        }
+      }
+    },
+    "calculationExpense": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "authorId": {
+          "type": "string"
+        },
+        "cost": {
+          "$ref": "#/definitions/calculationMoney"
+        }
+      }
+    },
+    "calculationHealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "calculationIntent": {
+      "type": "object",
+      "properties": {
+        "payerId": {
+          "type": "string"
+        },
+        "payeeId": {
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/definitions/calculationMoney"
+        }
+      }
+    },
+    "calculationMoney": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    },
+    "calculationParticipant": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

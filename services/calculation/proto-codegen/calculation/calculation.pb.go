@@ -301,8 +301,7 @@ func (x *CalcRequest) GetExpenses() []*Expense {
 
 type CalcResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PurchaseId    string                 `protobuf:"bytes,1,opt,name=purchase_id,json=purchaseId,proto3" json:"purchase_id,omitempty"`
-	Intents       []*Intent              `protobuf:"bytes,2,rep,name=intents,proto3" json:"intents,omitempty"`
+	Intents       []*Intent              `protobuf:"bytes,1,rep,name=intents,proto3" json:"intents,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -335,13 +334,6 @@ func (x *CalcResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CalcResponse.ProtoReflect.Descriptor instead.
 func (*CalcResponse) Descriptor() ([]byte, []int) {
 	return file_calculation_calculation_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *CalcResponse) GetPurchaseId() string {
-	if x != nil {
-		return x.PurchaseId
-	}
-	return ""
 }
 
 func (x *CalcResponse) GetIntents() []*Intent {
@@ -399,7 +391,7 @@ var File_calculation_calculation_proto protoreflect.FileDescriptor
 
 const file_calculation_calculation_proto_rawDesc = "" +
 	"\n" +
-	"\x1dcalculation/calculation.proto\x12\vcalculation\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x15google/api/http.proto\";\n" +
+	"\x1dcalculation/calculation.proto\x12\vcalculation\x1a\x1cgoogle/api/annotations.proto\x1a\x15google/api/http.proto\x1a\x1bgoogle/protobuf/empty.proto\";\n" +
 	"\x05Money\x12\x16\n" +
 	"\x06amount\x18\x01 \x01(\x03R\x06amount\x12\x1a\n" +
 	"\bcurrency\x18\x02 \x01(\tR\bcurrency\"&\n" +
@@ -417,11 +409,9 @@ const file_calculation_calculation_proto_rawDesc = "" +
 	"\vpurchase_id\x18\x01 \x01(\tR\n" +
 	"purchaseId\x12<\n" +
 	"\fparticipants\x18\x02 \x03(\v2\x18.calculation.ParticipantR\fparticipants\x120\n" +
-	"\bexpenses\x18\x03 \x03(\v2\x14.calculation.ExpenseR\bexpenses\"^\n" +
-	"\fCalcResponse\x12\x1f\n" +
-	"\vpurchase_id\x18\x01 \x01(\tR\n" +
-	"purchaseId\x12-\n" +
-	"\aintents\x18\x02 \x03(\v2\x13.calculation.IntentR\aintents\"(\n" +
+	"\bexpenses\x18\x03 \x03(\v2\x14.calculation.ExpenseR\bexpenses\"=\n" +
+	"\fCalcResponse\x12-\n" +
+	"\aintents\x18\x01 \x03(\v2\x13.calculation.IntentR\aintents\"(\n" +
 	"\x0eHealthResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status2\xe8\x01\n" +
 	"\x12CalculationService\x12y\n" +

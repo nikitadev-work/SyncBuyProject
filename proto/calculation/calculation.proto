@@ -3,7 +3,6 @@ syntax = "proto3";
 package calculation;
 
 import "google/api/annotations.proto";
-import "google/api/http.proto";
 import "google/protobuf/empty.proto";
 
 option go_package = "github.com/nikitadev-work/SyncBuyProject/services/calculation/proto-codegen;calcpb";
@@ -49,8 +48,7 @@ message CalcRequest {
 }
 
 message CalcResponse {
-  string purchase_id = 1;
-  repeated Intent intents = 2;
+  repeated Intent intents = 1;
 }
 
 message HealthResponse {
