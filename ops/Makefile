@@ -1,5 +1,7 @@
 .PHONY: run-public-swagger stop-public-swagger compose-dev-up compose-dev-down
 
+COMPOSE_DEV = docker compose -f docker-compose.dev.yml
+
 run-public-swagger:
 	@docker rm -f swagger-public 2>/dev/null || true
 	docker run --name swagger-public --rm -d -p 8080:8080 \
@@ -11,11 +13,8 @@ run-public-swagger:
 stop-public-swagger:
 	@docker rm -f swagger-public 2>/dev/null || true
 
-compose-dev-up:
-	docker compose -f docker-compose.dev.yml up -d
+dev-up:
+	$(COMPOSE_DEV) up -d
 
-compose-dev-down:
-	docker compose -f docker-compose.dev.yml down -v
-
-docker-prune:
-	docker system prune -af
+dev-down:
+	$(COMPOSE_DEV) down -v
