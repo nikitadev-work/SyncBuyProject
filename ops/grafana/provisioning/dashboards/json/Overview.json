@@ -253,6 +253,40 @@
                 ]
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^cadvisor$"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "cAdvisor",
+                    "url": "/d/tLHmjJ4H8/docker-cadvisor?from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^node-exporter$"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Node Exporter",
+                    "url": "/d/rYdddlPWk/node-exporter?from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -313,14 +347,14 @@
             "$__all"
           ]
         },
-        "definition": "label_values(up{job!~\"grafana|loki|promtail|prometheus\"},job)",
+        "definition": "label_values(up{job!~\"grafana|loki|promtail|prometheus|cadvisor|node-exporter\"},job)",
         "includeAll": true,
         "multi": true,
         "name": "service",
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(up{job!~\"grafana|loki|promtail|prometheus\"},job)",
+          "query": "label_values(up{job!~\"grafana|loki|promtail|prometheus|cadvisor|node-exporter\"},job)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
