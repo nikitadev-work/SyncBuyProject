@@ -2,7 +2,6 @@ package app
 
 import (
 	"calculation/config"
-	"calculation/internal/infra/logger"
 	grpcserver "calculation/internal/interfaces/grpc"
 	httpserver "calculation/internal/interfaces/http"
 	"calculation/internal/usecase"
@@ -14,7 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"calculation/internal/infra/metrics"
+	"github.com/nikitadev-work/SyncBuyProject/common/kit/logger"
+
+	"github.com/nikitadev-work/SyncBuyProject/common/kit/metrics"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
