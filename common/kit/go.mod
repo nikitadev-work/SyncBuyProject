@@ -1,4 +1,4 @@
-module kit
+module github.com/nikitadev-work/SyncBuyProject/common/kit
 
 go 1.23.0
 
