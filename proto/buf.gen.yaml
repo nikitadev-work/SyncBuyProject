@@ -1,16 +1,13 @@
 version: v1
 plugins:
-  # Go модели (*.pb.go)
   - plugin: buf.build/protocolbuffers/go
     out: services/calculation/proto-codegen
     opt: [paths=source_relative]
 
-  # gRPC стабы (*.pb.grpc.go)
   - plugin: buf.build/grpc/go
     out: services/calculation/proto-codegen
     opt: [paths=source_relative]
 
-  # OpenAPI (Swagger)
   - plugin: buf.build/grpc-ecosystem/openapiv2
     out: docs/contracts
     opt:

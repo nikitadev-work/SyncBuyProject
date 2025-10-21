@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"calculation/internal/infra/logger"
+	"github.com/nikitadev-work/SyncBuyProject/common/kit/logger"
 	uc "calculation/internal/usecase"
 	pb "calculation/proto-codegen/calculation"
 
-	"calculation/internal/infra/metrics"
+	"github.com/nikitadev-work/SyncBuyProject/common/kit/metrics"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 )
