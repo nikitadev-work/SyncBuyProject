@@ -1,11 +1,11 @@
-# Documentation for **Calculation** microservice
+# Documentation for **Identity** microservice
 
 # Structure 
 
 Для построения структуры сервиса была использована **Чистая архитектура**
 
 ```
-/calculation
+/identity
 ├── cmd                 
 │   └── main.go         // точка старта конфигурации сервиса
 ├── internal            
