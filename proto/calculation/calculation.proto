@@ -2,22 +2,13 @@ syntax = "proto3";
 
 package calculation;
 
-import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 option go_package = "github.com/nikitadev-work/SyncBuyProject/services/calculation/proto-codegen;calcpb";
 
 service CalculationService {
-  rpc CalculateDistribution(CalcRequest) returns (CalcResponse) {
-    option (google.api.http) = {
-      post: "/internal/calculation/distribute"
-      body: "*"
-    };
-  }
-
-  rpc Health(google.protobuf.Empty) returns (HealthResponse) {
-    option (google.api.http) = {get: "/internal/health"};
-  }
+  rpc CalculateDistribution(CalcRequest) returns (CalcResponse) {}
+  rpc Health(google.protobuf.Empty) returns (HealthResponse) {}
 }
 
 message Money {

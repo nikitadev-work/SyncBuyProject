@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package identity;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/nikitadev-work/SyncBuyProject/services/identity/proto-codegen;identitypb";
+
+service IdentityService {
+  rpc RegisterOfGetTelegramUser(RegisterOrGetTelegramUserRequest) returns (RegisterOrGetTelegramUserResponse) {}
+  rpc Health(google.protobuf.Empty) returns (HealthResponse) {}
+}
+
+message RegisterOrGetTelegramUserRequest {
+  string telegram_id = 1;
+  string chat_id = 2;
+  google.protobuf.Struct meta = 3;
+}
+
+message RegisterOrGetTelegramUserResponse {
+  string user_id = 1;
+  string status = 2;
+}
+
+message GetUserByTelegramIdRequest {
+  string telegram_id = 1;
+}
+
+message GetUserByTelegramIdResponse {
+  string user_id = 1;
+  string status = 2;
+  Profile profile = 3;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  Profile profile = 1;
+}
+
+message HealthResponse {
+  string status = 1;
+}
+
+message Profile {
+  string first_name = 1;
+  string last_name = 2;
+  string status = 3;
+  repeated Identity identities = 4;
+}
+
+message Identity {
+  string provider_type = 1;
+  string external_id = 2;
+}
