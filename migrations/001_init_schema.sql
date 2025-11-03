@@ -16,6 +16,7 @@ CREATE TABLE user_identities (
     internal_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     provider_type TEXT NOT NULL CHECK (provider_type in ('telegram')),
     created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now(),
     chat_id TEXT NOT NULL,
     meta JSONB,
 
