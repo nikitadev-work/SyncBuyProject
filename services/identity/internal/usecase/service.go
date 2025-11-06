@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"identity/internal/domain"
+
+	"github.com/google/uuid"
 )
 
 type IdentityUsecaseInterface interface {
@@ -14,11 +16,13 @@ type IdentityUsecaseInterface interface {
 
 type IdentityUsecase struct {
 	Repository IdentityRepositoryInterface
+	TxManager  TxManagerInterface
 }
 
-func NewIdentityUsecase(repository IdentityRepositoryInterface) *IdentityUsecase {
+func NewIdentityUsecase(repository IdentityRepositoryInterface, txManager TxManagerInterface) *IdentityUsecase {
 	return &IdentityUsecase{
 		Repository: repository,
+		TxManager:  txManager,
 	}
 }
 
@@ -29,14 +33,14 @@ func (iu *IdentityUsecase) RegisterOrGetUserByTelegram(ctx context.Context, inpu
 		TelegramId: input.TelegramId,
 	}
 
-	identity, err := iu.Repository.GetIdentityByTelegramId(repoIdentityRequest)
+	identity, err := iu.Repository.GetIdentityByTelegramId(ctx, &repoIdentityRequest)
 	if err == nil {
 		// User exists
 		repoGetRequest := GetUserProfileByUserIdRequestDTO{
 			UserId: identity.Identity.InternalId,
 		}
 
-		usr, err := iu.Repository.GetUserProfileByUserId(repoGetRequest)
+		usr, err := iu.Repository.GetUserProfileByUserId(ctx, &repoGetRequest)
 		if err == nil {
 			return RegisterOrGetUserByTelegramOutputDTO{
 				UserId: usr.User.Id,
@@ -47,33 +51,43 @@ func (iu *IdentityUsecase) RegisterOrGetUserByTelegram(ctx context.Context, inpu
 
 	// Register new User
 
-	repoCreateRequest := CreateNewUserRequestDTO{
-		Id:        identity.Identity.InternalId,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Status:    input.Status,
-	}
+	var userId uuid.UUID
 
-	resp, err := iu.Repository.CreateNewUser(repoCreateRequest)
+	err = iu.TxManager.WithinTx(ctx, func(ctx context.Context) error {
+		repoCreateRequest := CreateNewUserRequestDTO{
+			FirstName: input.FirstName,
+			LastName:  input.LastName,
+			Status:    domain.Active,
+		}
+
+		resp, err := iu.Repository.CreateNewUser(ctx, &repoCreateRequest)
+		if err != nil {
+			return ErrCreateUser
+		}
+
+		repoCreateIdentityRequest := CreateNewIdentityRequestDTO{
+			ExternalId:   input.TelegramId,
+			InternalId:   resp.UserId,
+			ProviderType: domain.Telegram,
+			ChatId:       input.ChatId,
+			Meta:         input.Meta,
+		}
+
+		err = iu.Repository.CreateNewIdentity(ctx, &repoCreateIdentityRequest)
+		if err != nil {
+			return ErrCreateIdentity
+		}
+
+		userId = resp.UserId
+
+		return nil
+	})
 	if err != nil {
-		return RegisterOrGetUserByTelegramOutputDTO{}, ErrCreateUser
-	}
-
-	repoCreateIdentityRequest := CreateNewIdentityRequestDTO{
-		ExternalId:   input.TelegramId,
-		InternalId:   resp.UserId,
-		ProviderType: domain.Telegram,
-		ChatId:       input.ChatId,
-		Meta:         input.Meta,
-	}
-
-	err = iu.Repository.CreateNewIdentity(repoCreateIdentityRequest)
-	if err != nil {
-		return RegisterOrGetUserByTelegramOutputDTO{}, ErrCreateIdentity
+		return RegisterOrGetUserByTelegramOutputDTO{}, err
 	}
 
 	return RegisterOrGetUserByTelegramOutputDTO{
-		UserId: resp.UserId,
+		UserId: userId,
 	}, nil
 }
 
@@ -82,7 +96,7 @@ func (iu *IdentityUsecase) GetUserByUserId(ctx context.Context, input GetUserByU
 		UserId: input.UserId,
 	}
 
-	resp, err := iu.Repository.GetUserProfileByUserId(repoGetRequest)
+	resp, err := iu.Repository.GetUserProfileByUserId(ctx, &repoGetRequest)
 	if err != nil {
 		return GetUserByUserIdOutputDTO{}, ErrUserDoesNotExist
 	}
@@ -98,7 +112,7 @@ func (iu *IdentityUsecase) GetUserByTelegram(ctx context.Context, input GetUserB
 		TelegramId: input.TelegramId,
 	}
 
-	identity, err := iu.Repository.GetIdentityByTelegramId(repoIdentityRequest)
+	identity, err := iu.Repository.GetIdentityByTelegramId(ctx, &repoIdentityRequest)
 	if err != nil {
 		return GetUserByTelegramOutputDTO{}, ErrIdentityDoesNotExist
 	}
@@ -108,7 +122,7 @@ func (iu *IdentityUsecase) GetUserByTelegram(ctx context.Context, input GetUserB
 		UserId: identity.Identity.InternalId,
 	}
 
-	usr, err := iu.Repository.GetUserProfileByUserId(repoGetRequest)
+	usr, err := iu.Repository.GetUserProfileByUserId(ctx, &repoGetRequest)
 	if err == nil {
 		return GetUserByTelegramOutputDTO{
 			User: usr.User,

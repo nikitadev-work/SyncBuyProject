@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	IdentityService_RegisterOfGetTelegramUser_FullMethodName = "/identity.IdentityService/RegisterOfGetTelegramUser"
+	IdentityService_RegisterOrGetTelegramUser_FullMethodName = "/identity.IdentityService/RegisterOrGetTelegramUser"
+	IdentityService_GetUserByTelegramId_FullMethodName       = "/identity.IdentityService/GetUserByTelegramId"
+	IdentityService_GetUserByUserId_FullMethodName           = "/identity.IdentityService/GetUserByUserId"
 	IdentityService_Health_FullMethodName                    = "/identity.IdentityService/Health"
 )
 
@@ -28,8 +29,10 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IdentityServiceClient interface {
-	RegisterOfGetTelegramUser(ctx context.Context, in *RegisterOrGetTelegramUserRequest, opts ...grpc.CallOption) (*RegisterOrGetTelegramUserResponse, error)
-	Health(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthResponse, error)
+	RegisterOrGetTelegramUser(ctx context.Context, in *RegisterOrGetTelegramUserRequest, opts ...grpc.CallOption) (*RegisterOrGetTelegramUserResponse, error)
+	GetUserByTelegramId(ctx context.Context, in *GetUserByTelegramIdRequest, opts ...grpc.CallOption) (*GetUserByTelegramIdResponse, error)
+	GetUserByUserId(ctx context.Context, in *GetUserByUserIdRequest, opts ...grpc.CallOption) (*GetUserByUserIdResponse, error)
+	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 }
 
 type identityServiceClient struct {
@@ -40,17 +43,37 @@ func NewIdentityServiceClient(cc grpc.ClientConnInterface) IdentityServiceClient
 	return &identityServiceClient{cc}
 }
 
-func (c *identityServiceClient) RegisterOfGetTelegramUser(ctx context.Context, in *RegisterOrGetTelegramUserRequest, opts ...grpc.CallOption) (*RegisterOrGetTelegramUserResponse, error) {
+func (c *identityServiceClient) RegisterOrGetTelegramUser(ctx context.Context, in *RegisterOrGetTelegramUserRequest, opts ...grpc.CallOption) (*RegisterOrGetTelegramUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterOrGetTelegramUserResponse)
-	err := c.cc.Invoke(ctx, IdentityService_RegisterOfGetTelegramUser_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, IdentityService_RegisterOrGetTelegramUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *identityServiceClient) Health(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthResponse, error) {
+func (c *identityServiceClient) GetUserByTelegramId(ctx context.Context, in *GetUserByTelegramIdRequest, opts ...grpc.CallOption) (*GetUserByTelegramIdResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserByTelegramIdResponse)
+	err := c.cc.Invoke(ctx, IdentityService_GetUserByTelegramId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *identityServiceClient) GetUserByUserId(ctx context.Context, in *GetUserByUserIdRequest, opts ...grpc.CallOption) (*GetUserByUserIdResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserByUserIdResponse)
+	err := c.cc.Invoke(ctx, IdentityService_GetUserByUserId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *identityServiceClient) Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HealthResponse)
 	err := c.cc.Invoke(ctx, IdentityService_Health_FullMethodName, in, out, cOpts...)
@@ -64,8 +87,10 @@ func (c *identityServiceClient) Health(ctx context.Context, in *emptypb.Empty, o
 // All implementations must embed UnimplementedIdentityServiceServer
 // for forward compatibility.
 type IdentityServiceServer interface {
-	RegisterOfGetTelegramUser(context.Context, *RegisterOrGetTelegramUserRequest) (*RegisterOrGetTelegramUserResponse, error)
-	Health(context.Context, *emptypb.Empty) (*HealthResponse, error)
+	RegisterOrGetTelegramUser(context.Context, *RegisterOrGetTelegramUserRequest) (*RegisterOrGetTelegramUserResponse, error)
+	GetUserByTelegramId(context.Context, *GetUserByTelegramIdRequest) (*GetUserByTelegramIdResponse, error)
+	GetUserByUserId(context.Context, *GetUserByUserIdRequest) (*GetUserByUserIdResponse, error)
+	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	mustEmbedUnimplementedIdentityServiceServer()
 }
 
@@ -76,10 +101,16 @@ type IdentityServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedIdentityServiceServer struct{}
 
-func (UnimplementedIdentityServiceServer) RegisterOfGetTelegramUser(context.Context, *RegisterOrGetTelegramUserRequest) (*RegisterOrGetTelegramUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterOfGetTelegramUser not implemented")
+func (UnimplementedIdentityServiceServer) RegisterOrGetTelegramUser(context.Context, *RegisterOrGetTelegramUserRequest) (*RegisterOrGetTelegramUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterOrGetTelegramUser not implemented")
 }
-func (UnimplementedIdentityServiceServer) Health(context.Context, *emptypb.Empty) (*HealthResponse, error) {
+func (UnimplementedIdentityServiceServer) GetUserByTelegramId(context.Context, *GetUserByTelegramIdRequest) (*GetUserByTelegramIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByTelegramId not implemented")
+}
+func (UnimplementedIdentityServiceServer) GetUserByUserId(context.Context, *GetUserByUserIdRequest) (*GetUserByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUserId not implemented")
+}
+func (UnimplementedIdentityServiceServer) Health(context.Context, *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Health not implemented")
 }
 func (UnimplementedIdentityServiceServer) mustEmbedUnimplementedIdentityServiceServer() {}
@@ -103,26 +134,62 @@ func RegisterIdentityServiceServer(s grpc.ServiceRegistrar, srv IdentityServiceS
 	s.RegisterService(&IdentityService_ServiceDesc, srv)
 }
 
-func _IdentityService_RegisterOfGetTelegramUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _IdentityService_RegisterOrGetTelegramUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterOrGetTelegramUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IdentityServiceServer).RegisterOfGetTelegramUser(ctx, in)
+		return srv.(IdentityServiceServer).RegisterOrGetTelegramUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: IdentityService_RegisterOfGetTelegramUser_FullMethodName,
+		FullMethod: IdentityService_RegisterOrGetTelegramUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServiceServer).RegisterOfGetTelegramUser(ctx, req.(*RegisterOrGetTelegramUserRequest))
+		return srv.(IdentityServiceServer).RegisterOrGetTelegramUser(ctx, req.(*RegisterOrGetTelegramUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IdentityService_GetUserByTelegramId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByTelegramIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServiceServer).GetUserByTelegramId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IdentityService_GetUserByTelegramId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServiceServer).GetUserByTelegramId(ctx, req.(*GetUserByTelegramIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IdentityService_GetUserByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServiceServer).GetUserByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IdentityService_GetUserByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServiceServer).GetUserByUserId(ctx, req.(*GetUserByUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IdentityService_Health_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(HealthRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -134,7 +201,7 @@ func _IdentityService_Health_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: IdentityService_Health_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServiceServer).Health(ctx, req.(*emptypb.Empty))
+		return srv.(IdentityServiceServer).Health(ctx, req.(*HealthRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -147,8 +214,16 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*IdentityServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegisterOfGetTelegramUser",
-			Handler:    _IdentityService_RegisterOfGetTelegramUser_Handler,
+			MethodName: "RegisterOrGetTelegramUser",
+			Handler:    _IdentityService_RegisterOrGetTelegramUser_Handler,
+		},
+		{
+			MethodName: "GetUserByTelegramId",
+			Handler:    _IdentityService_GetUserByTelegramId_Handler,
+		},
+		{
+			MethodName: "GetUserByUserId",
+			Handler:    _IdentityService_GetUserByUserId_Handler,
 		},
 		{
 			MethodName: "Health",

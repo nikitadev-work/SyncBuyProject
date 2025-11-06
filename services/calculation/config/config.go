@@ -11,7 +11,6 @@ type Config struct {
 	Log     Log
 	GRPC    GRPC
 	HTTP    HTTP
-	Swagger Swagger
 	Metrics Metrics
 }
 
@@ -30,10 +29,6 @@ type GRPC struct {
 
 type HTTP struct {
 	Port string `env:"HTTP_PORT,required"`
-}
-
-type Swagger struct {
-	Enabled bool `env:"SWAGGER_ENABLED" envDefault:"false"`
 }
 
 type Metrics struct {

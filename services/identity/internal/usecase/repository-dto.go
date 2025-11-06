@@ -8,7 +8,6 @@ import (
 )
 
 type CreateNewUserRequestDTO struct {
-	Id        uuid.UUID
 	FirstName string
 	LastName  string
 	Status    domain.Status

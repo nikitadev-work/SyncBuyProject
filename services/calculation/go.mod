@@ -9,7 +9,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/nikitadev-work/SyncBuyProject/common/kit v0.0.0-20251021191538-f175de67e9a5
 	github.com/prometheus/client_golang v1.23.2
-	google.golang.org/genproto/googleapis/api v0.0.0-20251007200510-49b9836ed3ff
 	google.golang.org/grpc v1.76.0
 	google.golang.org/protobuf v1.36.10
 )

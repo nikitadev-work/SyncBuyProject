@@ -26,8 +26,10 @@ const (
 type RegisterOrGetTelegramUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TelegramId    string                 `protobuf:"bytes,1,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
-	ChatId        string                 `protobuf:"bytes,2,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
-	Meta          *structpb.Struct       `protobuf:"bytes,3,opt,name=meta,proto3" json:"meta,omitempty"`
+	FirstName     string                 `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName      string                 `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	ChatId        string                 `protobuf:"bytes,4,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	Meta          *structpb.Struct       `protobuf:"bytes,5,opt,name=meta,proto3" json:"meta,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -69,6 +71,20 @@ func (x *RegisterOrGetTelegramUserRequest) GetTelegramId() string {
 	return ""
 }
 
+func (x *RegisterOrGetTelegramUserRequest) GetFirstName() string {
+	if x != nil {
+		return x.FirstName
+	}
+	return ""
+}
+
+func (x *RegisterOrGetTelegramUserRequest) GetLastName() string {
+	if x != nil {
+		return x.LastName
+	}
+	return ""
+}
+
 func (x *RegisterOrGetTelegramUserRequest) GetChatId() string {
 	if x != nil {
 		return x.ChatId
@@ -86,7 +102,6 @@ func (x *RegisterOrGetTelegramUserRequest) GetMeta() *structpb.Struct {
 type RegisterOrGetTelegramUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -124,13 +139,6 @@ func (*RegisterOrGetTelegramUserResponse) Descriptor() ([]byte, []int) {
 func (x *RegisterOrGetTelegramUserResponse) GetUserId() string {
 	if x != nil {
 		return x.UserId
-	}
-	return ""
-}
-
-func (x *RegisterOrGetTelegramUserResponse) GetStatus() string {
-	if x != nil {
-		return x.Status
 	}
 	return ""
 }
@@ -181,9 +189,7 @@ func (x *GetUserByTelegramIdRequest) GetTelegramId() string {
 
 type GetUserByTelegramIdResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	Profile       *Profile               `protobuf:"bytes,3,opt,name=profile,proto3" json:"profile,omitempty"`
+	Profile       *Profile               `protobuf:"bytes,1,opt,name=profile,proto3" json:"profile,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -218,20 +224,6 @@ func (*GetUserByTelegramIdResponse) Descriptor() ([]byte, []int) {
 	return file_identity_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetUserByTelegramIdResponse) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *GetUserByTelegramIdResponse) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
-}
-
 func (x *GetUserByTelegramIdResponse) GetProfile() *Profile {
 	if x != nil {
 		return x.Profile
@@ -239,27 +231,27 @@ func (x *GetUserByTelegramIdResponse) GetProfile() *Profile {
 	return nil
 }
 
-type GetUserRequest struct {
+type GetUserByUserIdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetUserRequest) Reset() {
-	*x = GetUserRequest{}
+func (x *GetUserByUserIdRequest) Reset() {
+	*x = GetUserByUserIdRequest{}
 	mi := &file_identity_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetUserRequest) String() string {
+func (x *GetUserByUserIdRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetUserRequest) ProtoMessage() {}
+func (*GetUserByUserIdRequest) ProtoMessage() {}
 
-func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
+func (x *GetUserByUserIdRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_identity_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -271,39 +263,39 @@ func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetUserRequest.ProtoReflect.Descriptor instead.
-func (*GetUserRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetUserByUserIdRequest.ProtoReflect.Descriptor instead.
+func (*GetUserByUserIdRequest) Descriptor() ([]byte, []int) {
 	return file_identity_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetUserRequest) GetUserId() string {
+func (x *GetUserByUserIdRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-type GetUserResponse struct {
+type GetUserByUserIdResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Profile       *Profile               `protobuf:"bytes,1,opt,name=profile,proto3" json:"profile,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetUserResponse) Reset() {
-	*x = GetUserResponse{}
+func (x *GetUserByUserIdResponse) Reset() {
+	*x = GetUserByUserIdResponse{}
 	mi := &file_identity_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetUserResponse) String() string {
+func (x *GetUserByUserIdResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetUserResponse) ProtoMessage() {}
+func (*GetUserByUserIdResponse) ProtoMessage() {}
 
-func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
+func (x *GetUserByUserIdResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_identity_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -315,14 +307,58 @@ func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetUserResponse.ProtoReflect.Descriptor instead.
-func (*GetUserResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetUserByUserIdResponse.ProtoReflect.Descriptor instead.
+func (*GetUserByUserIdResponse) Descriptor() ([]byte, []int) {
 	return file_identity_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetUserResponse) GetProfile() *Profile {
+func (x *GetUserByUserIdResponse) GetProfile() *Profile {
 	if x != nil {
 		return x.Profile
+	}
+	return nil
+}
+
+type HealthRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Empty         *emptypb.Empty         `protobuf:"bytes,1,opt,name=empty,proto3" json:"empty,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthRequest) Reset() {
+	*x = HealthRequest{}
+	mi := &file_identity_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthRequest) ProtoMessage() {}
+
+func (x *HealthRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_identity_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
+func (*HealthRequest) Descriptor() ([]byte, []int) {
+	return file_identity_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *HealthRequest) GetEmpty() *emptypb.Empty {
+	if x != nil {
+		return x.Empty
 	}
 	return nil
 }
@@ -336,7 +372,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_identity_proto_msgTypes[6]
+	mi := &file_identity_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -348,7 +384,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_proto_msgTypes[6]
+	mi := &file_identity_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,7 +397,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_identity_proto_rawDescGZIP(), []int{6}
+	return file_identity_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -373,17 +409,16 @@ func (x *HealthResponse) GetStatus() string {
 
 type Profile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	Identities    []*Identity            `protobuf:"bytes,4,rep,name=identities,proto3" json:"identities,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	FirstName     string                 `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName      string                 `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Profile) Reset() {
 	*x = Profile{}
-	mi := &file_identity_proto_msgTypes[7]
+	mi := &file_identity_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -395,7 +430,7 @@ func (x *Profile) String() string {
 func (*Profile) ProtoMessage() {}
 
 func (x *Profile) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_proto_msgTypes[7]
+	mi := &file_identity_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -408,7 +443,14 @@ func (x *Profile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Profile.ProtoReflect.Descriptor instead.
 func (*Profile) Descriptor() ([]byte, []int) {
-	return file_identity_proto_rawDescGZIP(), []int{7}
+	return file_identity_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *Profile) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
 }
 
 func (x *Profile) GetFirstName() string {
@@ -425,113 +467,44 @@ func (x *Profile) GetLastName() string {
 	return ""
 }
 
-func (x *Profile) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
-}
-
-func (x *Profile) GetIdentities() []*Identity {
-	if x != nil {
-		return x.Identities
-	}
-	return nil
-}
-
-type Identity struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProviderType  string                 `protobuf:"bytes,1,opt,name=provider_type,json=providerType,proto3" json:"provider_type,omitempty"`
-	ExternalId    string                 `protobuf:"bytes,2,opt,name=external_id,json=externalId,proto3" json:"external_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Identity) Reset() {
-	*x = Identity{}
-	mi := &file_identity_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Identity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Identity) ProtoMessage() {}
-
-func (x *Identity) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Identity.ProtoReflect.Descriptor instead.
-func (*Identity) Descriptor() ([]byte, []int) {
-	return file_identity_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *Identity) GetProviderType() string {
-	if x != nil {
-		return x.ProviderType
-	}
-	return ""
-}
-
-func (x *Identity) GetExternalId() string {
-	if x != nil {
-		return x.ExternalId
-	}
-	return ""
-}
-
 var File_identity_proto protoreflect.FileDescriptor
 
 const file_identity_proto_rawDesc = "" +
 	"\n" +
-	"\x0eidentity.proto\x12\bidentity\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x89\x01\n" +
+	"\x0eidentity.proto\x12\bidentity\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc5\x01\n" +
 	" RegisterOrGetTelegramUserRequest\x12\x1f\n" +
 	"\vtelegram_id\x18\x01 \x01(\tR\n" +
-	"telegramId\x12\x17\n" +
-	"\achat_id\x18\x02 \x01(\tR\x06chatId\x12+\n" +
-	"\x04meta\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x04meta\"T\n" +
+	"telegramId\x12\x1d\n" +
+	"\n" +
+	"first_name\x18\x02 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\x03 \x01(\tR\blastName\x12\x17\n" +
+	"\achat_id\x18\x04 \x01(\tR\x06chatId\x12+\n" +
+	"\x04meta\x18\x05 \x01(\v2\x17.google.protobuf.StructR\x04meta\"<\n" +
 	"!RegisterOrGetTelegramUserResponse\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\"=\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"=\n" +
 	"\x1aGetUserByTelegramIdRequest\x12\x1f\n" +
 	"\vtelegram_id\x18\x01 \x01(\tR\n" +
-	"telegramId\"{\n" +
-	"\x1bGetUserByTelegramIdResponse\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\x12+\n" +
-	"\aprofile\x18\x03 \x01(\v2\x11.identity.ProfileR\aprofile\")\n" +
-	"\x0eGetUserRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\">\n" +
-	"\x0fGetUserResponse\x12+\n" +
-	"\aprofile\x18\x01 \x01(\v2\x11.identity.ProfileR\aprofile\"(\n" +
+	"telegramId\"J\n" +
+	"\x1bGetUserByTelegramIdResponse\x12+\n" +
+	"\aprofile\x18\x01 \x01(\v2\x11.identity.ProfileR\aprofile\"1\n" +
+	"\x16GetUserByUserIdRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"F\n" +
+	"\x17GetUserByUserIdResponse\x12+\n" +
+	"\aprofile\x18\x01 \x01(\v2\x11.identity.ProfileR\aprofile\"=\n" +
+	"\rHealthRequest\x12,\n" +
+	"\x05empty\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\x05empty\"(\n" +
 	"\x0eHealthResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status\"\x91\x01\n" +
-	"\aProfile\x12\x1d\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\"^\n" +
+	"\aProfile\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x16\n" +
-	"\x06status\x18\x03 \x01(\tR\x06status\x122\n" +
-	"\n" +
-	"identities\x18\x04 \x03(\v2\x12.identity.IdentityR\n" +
-	"identities\"P\n" +
-	"\bIdentity\x12#\n" +
-	"\rprovider_type\x18\x01 \x01(\tR\fproviderType\x12\x1f\n" +
-	"\vexternal_id\x18\x02 \x01(\tR\n" +
-	"externalId2\xc7\x01\n" +
+	"first_name\x18\x02 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\x03 \x01(\tR\blastName2\x88\x03\n" +
 	"\x0fIdentityService\x12v\n" +
-	"\x19RegisterOfGetTelegramUser\x12*.identity.RegisterOrGetTelegramUserRequest\x1a+.identity.RegisterOrGetTelegramUserResponse\"\x00\x12<\n" +
-	"\x06Health\x12\x16.google.protobuf.Empty\x1a\x18.identity.HealthResponse\"\x00BUZSgithub.com/nikitadev-work/SyncBuyProject/services/identity/proto-codegen;identitypbb\x06proto3"
+	"\x19RegisterOrGetTelegramUser\x12*.identity.RegisterOrGetTelegramUserRequest\x1a+.identity.RegisterOrGetTelegramUserResponse\"\x00\x12d\n" +
+	"\x13GetUserByTelegramId\x12$.identity.GetUserByTelegramIdRequest\x1a%.identity.GetUserByTelegramIdResponse\"\x00\x12X\n" +
+	"\x0fGetUserByUserId\x12 .identity.GetUserByUserIdRequest\x1a!.identity.GetUserByUserIdResponse\"\x00\x12=\n" +
+	"\x06Health\x12\x17.identity.HealthRequest\x1a\x18.identity.HealthResponse\"\x00BUZSgithub.com/nikitadev-work/SyncBuyProject/services/identity/proto-codegen;identitypbb\x06proto3"
 
 var (
 	file_identity_proto_rawDescOnce sync.Once
@@ -551,25 +524,29 @@ var file_identity_proto_goTypes = []any{
 	(*RegisterOrGetTelegramUserResponse)(nil), // 1: identity.RegisterOrGetTelegramUserResponse
 	(*GetUserByTelegramIdRequest)(nil),        // 2: identity.GetUserByTelegramIdRequest
 	(*GetUserByTelegramIdResponse)(nil),       // 3: identity.GetUserByTelegramIdResponse
-	(*GetUserRequest)(nil),                    // 4: identity.GetUserRequest
-	(*GetUserResponse)(nil),                   // 5: identity.GetUserResponse
-	(*HealthResponse)(nil),                    // 6: identity.HealthResponse
-	(*Profile)(nil),                           // 7: identity.Profile
-	(*Identity)(nil),                          // 8: identity.Identity
+	(*GetUserByUserIdRequest)(nil),            // 4: identity.GetUserByUserIdRequest
+	(*GetUserByUserIdResponse)(nil),           // 5: identity.GetUserByUserIdResponse
+	(*HealthRequest)(nil),                     // 6: identity.HealthRequest
+	(*HealthResponse)(nil),                    // 7: identity.HealthResponse
+	(*Profile)(nil),                           // 8: identity.Profile
 	(*structpb.Struct)(nil),                   // 9: google.protobuf.Struct
 	(*emptypb.Empty)(nil),                     // 10: google.protobuf.Empty
 }
 var file_identity_proto_depIdxs = []int32{
 	9,  // 0: identity.RegisterOrGetTelegramUserRequest.meta:type_name -> google.protobuf.Struct
-	7,  // 1: identity.GetUserByTelegramIdResponse.profile:type_name -> identity.Profile
-	7,  // 2: identity.GetUserResponse.profile:type_name -> identity.Profile
-	8,  // 3: identity.Profile.identities:type_name -> identity.Identity
-	0,  // 4: identity.IdentityService.RegisterOfGetTelegramUser:input_type -> identity.RegisterOrGetTelegramUserRequest
-	10, // 5: identity.IdentityService.Health:input_type -> google.protobuf.Empty
-	1,  // 6: identity.IdentityService.RegisterOfGetTelegramUser:output_type -> identity.RegisterOrGetTelegramUserResponse
-	6,  // 7: identity.IdentityService.Health:output_type -> identity.HealthResponse
-	6,  // [6:8] is the sub-list for method output_type
-	4,  // [4:6] is the sub-list for method input_type
+	8,  // 1: identity.GetUserByTelegramIdResponse.profile:type_name -> identity.Profile
+	8,  // 2: identity.GetUserByUserIdResponse.profile:type_name -> identity.Profile
+	10, // 3: identity.HealthRequest.empty:type_name -> google.protobuf.Empty
+	0,  // 4: identity.IdentityService.RegisterOrGetTelegramUser:input_type -> identity.RegisterOrGetTelegramUserRequest
+	2,  // 5: identity.IdentityService.GetUserByTelegramId:input_type -> identity.GetUserByTelegramIdRequest
+	4,  // 6: identity.IdentityService.GetUserByUserId:input_type -> identity.GetUserByUserIdRequest
+	6,  // 7: identity.IdentityService.Health:input_type -> identity.HealthRequest
+	1,  // 8: identity.IdentityService.RegisterOrGetTelegramUser:output_type -> identity.RegisterOrGetTelegramUserResponse
+	3,  // 9: identity.IdentityService.GetUserByTelegramId:output_type -> identity.GetUserByTelegramIdResponse
+	5,  // 10: identity.IdentityService.GetUserByUserId:output_type -> identity.GetUserByUserIdResponse
+	7,  // 11: identity.IdentityService.Health:output_type -> identity.HealthResponse
+	8,  // [8:12] is the sub-list for method output_type
+	4,  // [4:8] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name

@@ -2,10 +2,10 @@ package app
 
 import (
 	"calculation/config"
-	grpcserver "calculation/internal/interfaces/grpc"
-	httpserver "calculation/internal/interfaces/http"
+	grpcserver "calculation/internal/adapters/grpc"
+	httpserver "calculation/internal/adapters/http"
 	"calculation/internal/usecase"
-	calcpb "calculation/proto-codegen/calculation"
+	calcpb "calculation/proto-codegen"
 	"context"
 	"errors"
 	"net"
