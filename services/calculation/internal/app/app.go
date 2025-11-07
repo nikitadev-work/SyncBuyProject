@@ -22,6 +22,7 @@ import (
 )
 
 func Run(ctx context.Context, cfg *config.Config) error {
+	// logger
 	l := logger.NewLogger(
 		cfg.Log.Level,
 		map[string]any{
@@ -32,10 +33,13 @@ func Run(ctx context.Context, cfg *config.Config) error {
 
 	l.Info("start configuration", nil)
 
+	// metrics
 	metrics.InitMetrics()
 
-	//grpc
+	// usecase
 	uc := usecase.NewUsecase()
+
+	// grpc
 	srv := grpc.NewServer()
 	handler := grpcserver.New(uc, l)
 	calcpb.RegisterCalculationServiceServer(srv, handler)
@@ -54,7 +58,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 		}
 	}()
 
-	//http
+	// http
 	httpMux := http.NewServeMux()
 	httpServer := httpserver.New(l, httpMux, cfg.HTTP.Port)
 	httpMux.Handle("/metrics", promhttp.Handler())
@@ -74,11 +78,11 @@ func Run(ctx context.Context, cfg *config.Config) error {
 		"log.level": cfg.Log.Level,
 	})
 
+	// gracefull shutdown
 	select {
 	case <-ctx.Done():
 		l.Info("starting graceful shutdown", nil)
 
-		//gracefull shutdown
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 		done := make(chan struct{})
@@ -87,13 +91,13 @@ func Run(ctx context.Context, cfg *config.Config) error {
 			var wg sync.WaitGroup
 			wg.Add(2)
 
-			//grpc server
+			// grpc server
 			go func() {
 				defer wg.Done()
 				srv.GracefulStop()
 			}()
 
-			//http server
+			// http server
 			go func() {
 				defer wg.Done()
 
@@ -111,7 +115,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 
 		select {
 		case <-done:
-			//successfully finished
+			// successfully finished
 			l.Info("gracefully finished", nil)
 			return nil
 		case <-shutdownCtx.Done():

@@ -7,6 +7,7 @@ import (
 	"identity/config"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -25,6 +26,7 @@ import (
 )
 
 func Run(ctx context.Context, cfg *config.Config) error {
+	// logger
 	l := logger.NewLogger(
 		cfg.Log.Level,
 		map[string]any{
@@ -35,23 +37,34 @@ func Run(ctx context.Context, cfg *config.Config) error {
 
 	l.Info("start configuration", nil)
 
-	metrics.InitMetrics()
+	// metrics
+	if cfg.Metrics.Enabled == true {
+		metrics.InitMetrics()
+	}
 
+	// postgresql
 	dbUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		cfg.PostgreSQL.User, cfg.PostgreSQL.Password, cfg.PostgreSQL.Host,
-		cfg.PostgreSQL.Port, cfg.PostgreSQL.Name, cfg.PostgreSQL.SslEnabled)
+		cfg.PostgreSQL.Port, cfg.PostgreSQL.Name, strconv.FormatBool(cfg.PostgreSQL.SslEnabled))
 	pool, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
 		l.Error("unable to create connection pool: %v\n", map[string]any{
 			"error": err.Error(),
 		})
+		return err
 	}
 	defer pool.Close()
 
-	//grpc
-	repository := repo.NewRepository()
-	txManager := txmanager.NewTxManager(pool, l)
+	// repository
+	repository := repo.NewRepository(pool, cfg.PostgreSQL.TxMarker)
+
+	// txmanager
+	txManager := txmanager.NewTxManager(pool, l, cfg.PostgreSQL.TxMarker)
+
+	// usecase
 	usecase := uc.NewIdentityUsecase(repository, txManager)
+
+	// grpc
 	srv := grpc.NewServer()
 	handler := grpcserver.New(*usecase, l)
 	calcpb.RegisterIdentityServiceServer(srv, handler)
@@ -70,7 +83,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 		}
 	}()
 
-	//http
+	// http
 	httpMux := http.NewServeMux()
 	httpServer := httpserver.New(l, httpMux, cfg.HTTP.Port)
 	httpMux.Handle("/metrics", promhttp.Handler())
@@ -88,14 +101,16 @@ func Run(ctx context.Context, cfg *config.Config) error {
 		"grpc.port": cfg.GRPC.Port,
 		"http.port": cfg.HTTP.Port,
 		"log.level": cfg.Log.Level,
-		//Add other data
+		"db.name":   cfg.PostgreSQL.Name,
+		"db.host":   cfg.PostgreSQL.Host,
+		"db.port":   cfg.PostgreSQL.Port,
 	})
 
+	// gracefull shutdown
 	select {
 	case <-ctx.Done():
 		l.Info("starting graceful shutdown", nil)
 
-		//gracefull shutdown
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 		done := make(chan struct{})
@@ -104,13 +119,13 @@ func Run(ctx context.Context, cfg *config.Config) error {
 			var wg sync.WaitGroup
 			wg.Add(2)
 
-			//grpc server
+			// grpc server
 			go func() {
 				defer wg.Done()
 				srv.GracefulStop()
 			}()
 
-			//http server
+			// http server
 			go func() {
 				defer wg.Done()
 
@@ -128,7 +143,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 
 		select {
 		case <-done:
-			//successfully finished
+			// successfully finished
 			l.Info("gracefully finished", nil)
 			return nil
 		case <-shutdownCtx.Done():

@@ -27,17 +27,17 @@ func (s *IdentityServer) RegisterOrGetTelegramUser(ctx context.Context, in *pb.R
 		metrics.IncGRPCRequestsTotal("RegisterOrGetTelegramUser")
 	}()
 
-	err := ValidateRegisterOrGetTelegramUser(in)
+	meta, err := ConvertMetaToJson(in.Meta)
 	if err != nil {
-		s.logger.Error("validation error", map[string]any{
+		s.logger.Error("meta convertation error", map[string]any{
 			"error": err.Error(),
 		})
 		return nil, ErrToStatus(err)
 	}
 
-	meta, err := ConvertMetaToJson(in.Meta)
+	err = ValidateRegisterOrGetTelegramUser(in, &meta)
 	if err != nil {
-		s.logger.Error("meta convertation error", map[string]any{
+		s.logger.Error("validation error", map[string]any{
 			"error": err.Error(),
 		})
 		return nil, ErrToStatus(err)
@@ -99,7 +99,7 @@ func (s *IdentityServer) GetUserByTelegramId(ctx context.Context, in *pb.GetUser
 		return nil, ErrToStatus(err)
 	}
 
-	result, err := ConvertOutputDTOToGetUserTelegramResonse(&resp)
+	result, err := ConvertOutputDTOToGetUserTelegramResponse(&resp)
 	if err != nil {
 		s.logger.Error("convertation response data error", map[string]any{
 			"error": err.Error(),

@@ -16,7 +16,7 @@ func CheckFirstName(firstName string) error {
 		if (i == 0 && !unicode.IsLetter(char)) || (i == len(firstName)-1 && char == ' ') {
 			return ErrIncorrectFirstName
 		}
-		if !((unicode.IsLetter(char) || unicode.IsDigit(char) || unicode.IsSpace(char)) && char != ' ') {
+		if !(unicode.IsLetter(char) || unicode.IsDigit(char) || unicode.IsSpace(char)) {
 			return ErrIncorrectFirstName
 		}
 	}
@@ -31,7 +31,7 @@ func CheckLastName(lastName string) error {
 		if (i == 0 && !unicode.IsLetter(char)) || (i == len(lastName)-1 && char == ' ') {
 			return ErrIncorrectLastName
 		}
-		if !((unicode.IsLetter(char) || unicode.IsDigit(char) || unicode.IsSpace(char)) && char != ' ') {
+		if !(unicode.IsLetter(char) || unicode.IsDigit(char) || unicode.IsSpace(char)) {
 			return ErrIncorrectLastName
 		}
 	}
@@ -74,7 +74,7 @@ func CheckExternalId(externalId string) error {
 	return nil
 }
 
-func ValidateRegisterOrGetTelegramUser(in *pb.RegisterOrGetTelegramUserRequest) error {
+func ValidateRegisterOrGetTelegramUser(in *pb.RegisterOrGetTelegramUserRequest, meta *json.RawMessage) error {
 	err := CheckFirstName(in.FirstName)
 	if err != nil {
 		return ErrIncorrectFirstName
@@ -88,6 +88,16 @@ func ValidateRegisterOrGetTelegramUser(in *pb.RegisterOrGetTelegramUserRequest) 
 	err = CheckChatId(in.ChatId)
 	if err != nil {
 		return ErrIncorrectChatId
+	}
+
+	err = CheckExternalId(in.TelegramId)
+	if err != nil {
+		return ErrIncorrectExternalId
+	}
+
+	err = CheckMeta(*meta)
+	if err != nil {
+		return ErrIncorrectMeta
 	}
 
 	return nil

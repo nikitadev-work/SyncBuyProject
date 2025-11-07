@@ -32,7 +32,7 @@ func ConvertGetUserTelegramRequestToInputDTO(input *pb.GetUserByTelegramIdReques
 	}, nil
 }
 
-func ConvertOutputDTOToGetUserTelegramResonse(input *uc.GetUserByTelegramOutputDTO) (*pb.GetUserByTelegramIdResponse, error) {
+func ConvertOutputDTOToGetUserTelegramResponse(input *uc.GetUserByTelegramOutputDTO) (*pb.GetUserByTelegramIdResponse, error) {
 	profile := pb.Profile{
 		UserId:    input.User.Id.String(),
 		FirstName: input.User.FirstName,

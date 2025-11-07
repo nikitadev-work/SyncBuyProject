@@ -43,6 +43,7 @@ type PostgreSQL struct {
 	Port       string `env:"DB_PORT,required"`
 	Name       string `env:"DB_NAME,required"`
 	SslEnabled bool   `env:"DB_SSL_ENABLED,required"`
+	TxMarker   string `env:"DB_TX_MARKER,required"`
 }
 
 func NewConfig() (*Config, error) {
