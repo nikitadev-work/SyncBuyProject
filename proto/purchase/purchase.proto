@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package purchase;
+
+option go_package = "github.com/nikitadev-work/SyncBuyProject/services/purchase/proto-codegen;purchasepb";
+
+service PurchaseService {}
