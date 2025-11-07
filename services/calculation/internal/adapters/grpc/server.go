@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/nikitadev-work/SyncBuyProject/common/kit/logger"
 	uc "calculation/internal/usecase"
-	pb "calculation/proto-codegen/calculation"
+	pb "calculation/proto-codegen"
+
+	"github.com/nikitadev-work/SyncBuyProject/common/kit/logger"
 
 	"github.com/nikitadev-work/SyncBuyProject/common/kit/metrics"
 
@@ -18,6 +19,7 @@ type CalculationServer struct {
 	usecase uc.CalculationUsecase
 
 	logger logger.LoggerInterface
+
 }
 
 func New(usecase uc.CalculationUsecase, logger logger.LoggerInterface) *CalculationServer {

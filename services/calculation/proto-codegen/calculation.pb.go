@@ -2,12 +2,11 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        (unknown)
-// source: calculation/calculation.proto
+// source: calculation.proto
 
 package calcpb
 
 import (
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -33,7 +32,7 @@ type Money struct {
 
 func (x *Money) Reset() {
 	*x = Money{}
-	mi := &file_calculation_calculation_proto_msgTypes[0]
+	mi := &file_calculation_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +44,7 @@ func (x *Money) String() string {
 func (*Money) ProtoMessage() {}
 
 func (x *Money) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[0]
+	mi := &file_calculation_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +57,7 @@ func (x *Money) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Money.ProtoReflect.Descriptor instead.
 func (*Money) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{0}
+	return file_calculation_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Money) GetAmount() int64 {
@@ -84,7 +83,7 @@ type Participant struct {
 
 func (x *Participant) Reset() {
 	*x = Participant{}
-	mi := &file_calculation_calculation_proto_msgTypes[1]
+	mi := &file_calculation_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -96,7 +95,7 @@ func (x *Participant) String() string {
 func (*Participant) ProtoMessage() {}
 
 func (x *Participant) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[1]
+	mi := &file_calculation_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -109,7 +108,7 @@ func (x *Participant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Participant.ProtoReflect.Descriptor instead.
 func (*Participant) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{1}
+	return file_calculation_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Participant) GetUserId() string {
@@ -130,7 +129,7 @@ type Expense struct {
 
 func (x *Expense) Reset() {
 	*x = Expense{}
-	mi := &file_calculation_calculation_proto_msgTypes[2]
+	mi := &file_calculation_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -142,7 +141,7 @@ func (x *Expense) String() string {
 func (*Expense) ProtoMessage() {}
 
 func (x *Expense) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[2]
+	mi := &file_calculation_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -155,7 +154,7 @@ func (x *Expense) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Expense.ProtoReflect.Descriptor instead.
 func (*Expense) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{2}
+	return file_calculation_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Expense) GetId() string {
@@ -190,7 +189,7 @@ type Intent struct {
 
 func (x *Intent) Reset() {
 	*x = Intent{}
-	mi := &file_calculation_calculation_proto_msgTypes[3]
+	mi := &file_calculation_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -202,7 +201,7 @@ func (x *Intent) String() string {
 func (*Intent) ProtoMessage() {}
 
 func (x *Intent) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[3]
+	mi := &file_calculation_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -215,7 +214,7 @@ func (x *Intent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Intent.ProtoReflect.Descriptor instead.
 func (*Intent) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{3}
+	return file_calculation_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Intent) GetPayerId() string {
@@ -250,7 +249,7 @@ type CalcRequest struct {
 
 func (x *CalcRequest) Reset() {
 	*x = CalcRequest{}
-	mi := &file_calculation_calculation_proto_msgTypes[4]
+	mi := &file_calculation_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -262,7 +261,7 @@ func (x *CalcRequest) String() string {
 func (*CalcRequest) ProtoMessage() {}
 
 func (x *CalcRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[4]
+	mi := &file_calculation_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -275,7 +274,7 @@ func (x *CalcRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CalcRequest.ProtoReflect.Descriptor instead.
 func (*CalcRequest) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{4}
+	return file_calculation_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CalcRequest) GetPurchaseId() string {
@@ -308,7 +307,7 @@ type CalcResponse struct {
 
 func (x *CalcResponse) Reset() {
 	*x = CalcResponse{}
-	mi := &file_calculation_calculation_proto_msgTypes[5]
+	mi := &file_calculation_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -320,7 +319,7 @@ func (x *CalcResponse) String() string {
 func (*CalcResponse) ProtoMessage() {}
 
 func (x *CalcResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[5]
+	mi := &file_calculation_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -333,7 +332,7 @@ func (x *CalcResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CalcResponse.ProtoReflect.Descriptor instead.
 func (*CalcResponse) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{5}
+	return file_calculation_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CalcResponse) GetIntents() []*Intent {
@@ -352,7 +351,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_calculation_calculation_proto_msgTypes[6]
+	mi := &file_calculation_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -364,7 +363,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_calculation_calculation_proto_msgTypes[6]
+	mi := &file_calculation_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -377,7 +376,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_calculation_calculation_proto_rawDescGZIP(), []int{6}
+	return file_calculation_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -387,11 +386,11 @@ func (x *HealthResponse) GetStatus() string {
 	return ""
 }
 
-var File_calculation_calculation_proto protoreflect.FileDescriptor
+var File_calculation_proto protoreflect.FileDescriptor
 
-const file_calculation_calculation_proto_rawDesc = "" +
+const file_calculation_proto_rawDesc = "" +
 	"\n" +
-	"\x1dcalculation/calculation.proto\x12\vcalculation\x1a\x1cgoogle/api/annotations.proto\x1a\x15google/api/http.proto\x1a\x1bgoogle/protobuf/empty.proto\";\n" +
+	"\x11calculation.proto\x12\vcalculation\x1a\x1bgoogle/protobuf/empty.proto\";\n" +
 	"\x05Money\x12\x16\n" +
 	"\x06amount\x18\x01 \x01(\x03R\x06amount\x12\x1a\n" +
 	"\bcurrency\x18\x02 \x01(\tR\bcurrency\"&\n" +
@@ -413,25 +412,25 @@ const file_calculation_calculation_proto_rawDesc = "" +
 	"\fCalcResponse\x12-\n" +
 	"\aintents\x18\x01 \x03(\v2\x13.calculation.IntentR\aintents\"(\n" +
 	"\x0eHealthResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2\xe8\x01\n" +
-	"\x12CalculationService\x12y\n" +
-	"\x15CalculateDistribution\x12\x18.calculation.CalcRequest\x1a\x19.calculation.CalcResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /internal/calculation/distribute\x12W\n" +
-	"\x06Health\x12\x16.google.protobuf.Empty\x1a\x1b.calculation.HealthResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/internal/healthBTZRgithub.com/nikitadev-work/SyncBuyProject/services/calculation/proto-codegen;calcpbb\x06proto3"
+	"\x06status\x18\x01 \x01(\tR\x06status2\xa5\x01\n" +
+	"\x12CalculationService\x12N\n" +
+	"\x15CalculateDistribution\x12\x18.calculation.CalcRequest\x1a\x19.calculation.CalcResponse\"\x00\x12?\n" +
+	"\x06Health\x12\x16.google.protobuf.Empty\x1a\x1b.calculation.HealthResponse\"\x00BTZRgithub.com/nikitadev-work/SyncBuyProject/services/calculation/proto-codegen;calcpbb\x06proto3"
 
 var (
-	file_calculation_calculation_proto_rawDescOnce sync.Once
-	file_calculation_calculation_proto_rawDescData []byte
+	file_calculation_proto_rawDescOnce sync.Once
+	file_calculation_proto_rawDescData []byte
 )
 
-func file_calculation_calculation_proto_rawDescGZIP() []byte {
-	file_calculation_calculation_proto_rawDescOnce.Do(func() {
-		file_calculation_calculation_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_calculation_calculation_proto_rawDesc), len(file_calculation_calculation_proto_rawDesc)))
+func file_calculation_proto_rawDescGZIP() []byte {
+	file_calculation_proto_rawDescOnce.Do(func() {
+		file_calculation_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_calculation_proto_rawDesc), len(file_calculation_proto_rawDesc)))
 	})
-	return file_calculation_calculation_proto_rawDescData
+	return file_calculation_proto_rawDescData
 }
 
-var file_calculation_calculation_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_calculation_calculation_proto_goTypes = []any{
+var file_calculation_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_calculation_proto_goTypes = []any{
 	(*Money)(nil),          // 0: calculation.Money
 	(*Participant)(nil),    // 1: calculation.Participant
 	(*Expense)(nil),        // 2: calculation.Expense
@@ -441,7 +440,7 @@ var file_calculation_calculation_proto_goTypes = []any{
 	(*HealthResponse)(nil), // 6: calculation.HealthResponse
 	(*emptypb.Empty)(nil),  // 7: google.protobuf.Empty
 }
-var file_calculation_calculation_proto_depIdxs = []int32{
+var file_calculation_proto_depIdxs = []int32{
 	0, // 0: calculation.Expense.cost:type_name -> calculation.Money
 	0, // 1: calculation.Intent.amount:type_name -> calculation.Money
 	1, // 2: calculation.CalcRequest.participants:type_name -> calculation.Participant
@@ -458,26 +457,26 @@ var file_calculation_calculation_proto_depIdxs = []int32{
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_calculation_calculation_proto_init() }
-func file_calculation_calculation_proto_init() {
-	if File_calculation_calculation_proto != nil {
+func init() { file_calculation_proto_init() }
+func file_calculation_proto_init() {
+	if File_calculation_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_calculation_calculation_proto_rawDesc), len(file_calculation_calculation_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_calculation_proto_rawDesc), len(file_calculation_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_calculation_calculation_proto_goTypes,
-		DependencyIndexes: file_calculation_calculation_proto_depIdxs,
-		MessageInfos:      file_calculation_calculation_proto_msgTypes,
+		GoTypes:           file_calculation_proto_goTypes,
+		DependencyIndexes: file_calculation_proto_depIdxs,
+		MessageInfos:      file_calculation_proto_msgTypes,
 	}.Build()
-	File_calculation_calculation_proto = out.File
-	file_calculation_calculation_proto_goTypes = nil
-	file_calculation_calculation_proto_depIdxs = nil
+	File_calculation_proto = out.File
+	file_calculation_proto_goTypes = nil
+	file_calculation_proto_depIdxs = nil
 }

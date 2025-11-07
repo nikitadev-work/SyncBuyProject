@@ -2,7 +2,7 @@ package grpcserver
 
 import (
 	"calculation/internal/domain"
-	pb "calculation/proto-codegen/calculation"
+	pb "calculation/proto-codegen"
 
 	"github.com/google/uuid"
 )

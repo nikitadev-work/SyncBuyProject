@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: calculation/calculation.proto
+// source: calculation.proto
 
 package calcpb
 
@@ -156,5 +156,5 @@ var CalculationService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "calculation/calculation.proto",
+	Metadata: "calculation.proto",
 }

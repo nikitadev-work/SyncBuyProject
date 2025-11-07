@@ -1,22 +1,26 @@
 package app
 
 import (
-	"calculation/config"
-	grpcserver "calculation/internal/adapters/grpc"
-	httpserver "calculation/internal/adapters/http"
-	"calculation/internal/usecase"
-	calcpb "calculation/proto-codegen"
 	"context"
 	"errors"
+	"fmt"
+	"identity/config"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
+	grpcserver "identity/internal/adapters/grpc"
+	httpserver "identity/internal/adapters/http"
+	txmanager "identity/internal/adapters/txmanager"
+	repo "identity/internal/repository"
+	uc "identity/internal/usecase"
+	calcpb "identity/proto-codegen"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nikitadev-work/SyncBuyProject/common/kit/logger"
-
 	"github.com/nikitadev-work/SyncBuyProject/common/kit/metrics"
-
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 )
@@ -34,15 +38,36 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	l.Info("start configuration", nil)
 
 	// metrics
-	metrics.InitMetrics()
+	if cfg.Metrics.Enabled == true {
+		metrics.InitMetrics()
+	}
+
+	// postgresql
+	dbUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		cfg.PostgreSQL.User, cfg.PostgreSQL.Password, cfg.PostgreSQL.Host,
+		cfg.PostgreSQL.Port, cfg.PostgreSQL.Name, strconv.FormatBool(cfg.PostgreSQL.SslEnabled))
+	pool, err := pgxpool.New(ctx, dbUrl)
+	if err != nil {
+		l.Error("unable to create connection pool: %v\n", map[string]any{
+			"error": err.Error(),
+		})
+		return err
+	}
+	defer pool.Close()
+
+	// repository
+	repository := repo.NewRepository(pool, cfg.PostgreSQL.TxMarker)
+
+	// txmanager
+	txManager := txmanager.NewTxManager(pool, l, cfg.PostgreSQL.TxMarker)
 
 	// usecase
-	uc := usecase.NewUsecase()
+	usecase := uc.NewIdentityUsecase(repository, txManager)
 
 	// grpc
 	srv := grpc.NewServer()
-	handler := grpcserver.New(uc, l)
-	calcpb.RegisterCalculationServiceServer(srv, handler)
+	handler := grpcserver.New(*usecase, l)
+	calcpb.RegisterIdentityServiceServer(srv, handler)
 
 	lis, err := net.Listen("tcp", ":"+cfg.GRPC.Port)
 	if err != nil {
@@ -72,10 +97,13 @@ func Run(ctx context.Context, cfg *config.Config) error {
 		}
 	}()
 
-	l.Info("calculation service started", map[string]any{
+	l.Info("identity service started", map[string]any{
 		"grpc.port": cfg.GRPC.Port,
 		"http.port": cfg.HTTP.Port,
 		"log.level": cfg.Log.Level,
+		"db.name":   cfg.PostgreSQL.Name,
+		"db.host":   cfg.PostgreSQL.Host,
+		"db.port":   cfg.PostgreSQL.Port,
 	})
 
 	// gracefull shutdown
