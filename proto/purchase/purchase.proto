@@ -2,6 +2,231 @@ syntax = "proto3";
 
 package purchase;
 
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/nikitadev-work/SyncBuyProject/services/purchase/proto-codegen;purchasepb";
 
-service PurchaseService {}
+service PurchaseService {
+  // Purchase
+  rpc CreatePurchase(CreatePurchaseRequest) returns (CreatePurchaseResponse) {}
+  rpc GetPurchase(GetPurchaseRequest) returns (GetPurchaseResponse) {}
+  rpc ListPurchases(ListPurchasesRequest) returns (ListPurchasesResponse) {}
+
+  // Participant
+  rpc CreateInvite(CreateInviteRequest) returns (CreateInviteResponse) {}
+  rpc JoinByInvite(JoinByInviteRequest) returns (JoinByInviteResponse) {}
+  rpc RemoveParticipant(RemoveParticipantRequest) returns (RemoveParticipantResponse) {}
+  rpc ListParticipantsByPurchaseId(ListParticipantsByPurchaseIdRequest) returns (ListParticipantsByPurchaseIdResponse) {}
+
+  // Task
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse) {}
+  rpc TakeTask(TakeTaskRequest) returns (TakeTaskResponse) {}
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse) {}
+  rpc ListTasksByPurchaseId(ListTasksByPurchaseIdRequest) returns (ListTasksByPurchaseIdResponse) {}
+  rpc MarkTaskAsDone(MarkTaskAsDoneRequest) returns (MarkTaskAsDoneResponse) {}
+
+  //Status
+  rpc LockPurchase(LockPurchaseRequest) returns (LockPurchaseResponse) {}
+  rpc UnlockPurchase(UnlockPurchaseRequest) returns (UnlockPurchaseResponse) {}
+  rpc CanUnlock(CanUnlockRequest) returns (CanUnlockResponse) {}
+  rpc GetSnapshot(GetSnapshotRequest) returns (GetSnapshotResponse) {}
+  rpc MarkSettlementInitiated(MarkSettlementInitiatedRequest) returns (MarkSettlementInitiatedResponse) {}
+  rpc FinishPurchase(FinishPurchaseRequest) returns (FinishPurchaseResponse) {}
+
+  //Health
+  rpc Health(HealthRequest) returns (HealthResponse) {}
+}
+
+message Purchase {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string currency = 4;
+  google.protobuf.Timestamp settlement_initiated_at = 5;
+  string status = 6;
+  google.protobuf.Timestamp locked_at = 7;
+  google.protobuf.Timestamp finished_at = 8;
+}
+
+message Task {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string purchase_id = 4;
+  string author_user_id = 5;
+  string executor_user_id = 6;
+  bool done = 7;
+  int64 amount = 8;
+}
+
+message Snapshot {
+  string purchase_id = 1;
+  string purchase_title = 2;
+  string currency = 3;
+  repeated Task tasks = 4;
+  repeated string participant_user_ids = 5;
+}
+
+message CreatePurchaseRequest {
+  string title = 1;
+  string description = 2;
+  string currency = 3;
+}
+
+message CreatePurchaseResponse {
+  string purchase_id = 1;
+}
+
+message GetPurchaseRequest {
+  string purchase_id = 1;
+}
+
+message GetPurchaseResponse {
+  Purchase purchase = 1;
+}
+
+message ListPurchasesRequest {
+  google.protobuf.Empty empty = 1;
+}
+
+message ListPurchasesResponse {
+  repeated Purchase purchases = 1;
+}
+
+message CreateInviteRequest {
+  string purchase_id = 3;
+}
+
+message CreateInviteResponse {
+  string token = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message JoinByInviteRequest {
+  string user_id = 1;
+  string token = 2;
+}
+
+message JoinByInviteResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message RemoveParticipantRequest {
+  string user_id = 1;
+  string purchase_id = 2;
+}
+
+message RemoveParticipantResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message ListParticipantsByPurchaseIdRequest {
+  string purchase_id = 1;
+}
+
+message ListParticipantsByPurchaseIdResponse {
+  repeated string user_ids = 1;
+}
+
+message CreateTaskRequest {
+  string title = 1;
+  string description = 2;
+  string purchase_id = 3;
+  string author_user_id = 4;
+  int64 amount = 5;
+}
+
+message CreateTaskResponse {
+  string task_id = 1;
+}
+
+message TakeTaskRequest {
+  string task_id = 1;
+  string executor_user_id = 2;
+}
+
+message TakeTaskResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message DeleteTaskRequest {
+  string task_id = 1;
+}
+
+message DeleteTaskResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message ListTasksByPurchaseIdRequest {
+  string purchase_id = 1;
+}
+
+message ListTasksByPurchaseIdResponse {
+  repeated Task tasks = 1;
+}
+
+message MarkTaskAsDoneRequest {
+  string task_id = 1;
+}
+
+message MarkTaskAsDoneResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message LockPurchaseRequest {
+  string purchase_id = 1;
+}
+
+message LockPurchaseResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message UnlockPurchaseRequest {
+  string purchase_id = 1;
+}
+
+message UnlockPurchaseResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message CanUnlockRequest {
+  string purchase_id = 1;
+}
+
+message CanUnlockResponse {
+  bool can_update = 1;
+}
+
+message GetSnapshotRequest {
+  string purchase_id = 1;
+}
+
+message GetSnapshotResponse {
+  Snapshot snapshot = 1;
+}
+
+message MarkSettlementInitiatedRequest {
+  string purchase_id = 1;
+}
+
+message MarkSettlementInitiatedResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message FinishPurchaseRequest {
+  string purchase_id = 1;
+}
+
+message FinishPurchaseResponse {
+  google.protobuf.Empty empty = 1;
+}
+
+message HealthRequest {
+  google.protobuf.Empty empty = 1;
+}
+
+message HealthResponse {
+  string status = 1;
+}
