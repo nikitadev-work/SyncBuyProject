@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"identity/config"
+	identitypb "identity/proto-codegen"
 	"net"
 	"net/http"
 	"strconv"
@@ -16,7 +17,6 @@ import (
 	txmanager "identity/internal/adapters/txmanager"
 	repo "identity/internal/repository"
 	uc "identity/internal/usecase"
-	calcpb "identity/proto-codegen"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nikitadev-work/SyncBuyProject/common/kit/logger"
@@ -67,7 +67,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	// grpc
 	srv := grpc.NewServer()
 	handler := grpcserver.New(*usecase, l)
-	calcpb.RegisterIdentityServiceServer(srv, handler)
+	identitypb.RegisterIdentityServiceServer(srv, handler)
 
 	lis, err := net.Listen("tcp", ":"+cfg.GRPC.Port)
 	if err != nil {

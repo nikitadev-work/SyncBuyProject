@@ -22,6 +22,7 @@ dev-down:
 buf-generate:
 	@cd proto/calculation && buf generate
 	@cd proto/identity    && buf generate
+	@cd proto/purchase    && buf generate
 
 doc-static-gen-calculation:
 	@protoc -I proto   --doc_out=docs/contracts   --doc_opt=html,calculation.html   proto/calculation/calculation.proto
@@ -29,6 +30,10 @@ doc-static-gen-calculation:
 doc-static-gen-identity:
 	@protoc -I proto   --doc_out=docs/contracts   --doc_opt=html,identity.html   proto/identity/identity.proto
 
+doc-static-gen-purchase:
+	@protoc -I proto   --doc_out=docs/contracts   --doc_opt=html,purchase.html   proto/purchase/purchase.proto
+
 doc-static-gen-all:
 	@protoc -I proto   --doc_out=docs/contracts   --doc_opt=html,calculation.html   proto/calculation/calculation.proto
 	@protoc -I proto   --doc_out=docs/contracts   --doc_opt=html,identity.html   proto/identity/identity.proto
+	@protoc -I proto   --doc_out=docs/contracts   --doc_opt=html,purchase.html   proto/purchase/purchase.proto
