@@ -3,13 +3,17 @@ package usecase
 import (
 	"purchase/internal/domain"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 type CreatePurchaseRequestDTO struct {
 	Title       string
 	Description string
 	Currency    string
+}
+
+type CreatePurchaseReponseDTO struct {
+	PurchaseId uuid.UUID
 }
 
 type GetPurchaseRequestDTO struct {
@@ -47,8 +51,13 @@ type CreateTaskRequestDTO struct {
 	Amount         int64
 }
 
+type CreateTaskResponseDTO struct {
+	TaskId uuid.UUID
+}
+
 type TakeTaskRequestDTO struct {
 	TaskId uuid.UUID
+	UserId uuid.UUID
 }
 
 type DeleteTaskRequestDTO struct {
@@ -73,14 +82,6 @@ type LockPurchaseRequestDTO struct {
 
 type UnlockPurchaseRequestDTO struct {
 	PurchaseId uuid.UUID
-}
-
-type GetSnapshotRequestDTO struct {
-	PurchaseId uuid.UUID
-}
-
-type GetSnapshotResponseDTO struct {
-	Snapshot domain.Snapstot
 }
 
 type MarkSettlementInitiatedRequestDTO struct {

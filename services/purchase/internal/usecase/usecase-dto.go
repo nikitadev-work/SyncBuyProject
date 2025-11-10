@@ -3,7 +3,7 @@ package usecase
 import (
 	"purchase/internal/domain"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 type CreatePurchaseInputDTO struct {

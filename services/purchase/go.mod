@@ -7,6 +7,7 @@ toolchain go1.24.10
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/gofrs/uuid v4.4.0+incompatible
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/nikitadev-work/SyncBuyProject/common/kit v0.0.0-20251107193235-2402d2212a88
 	github.com/prometheus/client_golang v1.23.2

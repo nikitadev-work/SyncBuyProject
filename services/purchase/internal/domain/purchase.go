@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 type Status int
