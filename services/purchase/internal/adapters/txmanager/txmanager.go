@@ -2,6 +2,7 @@ package txmanager
 
 import (
 	"context"
+	"purchase/internal/usecase"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,7 +15,7 @@ type TxManager struct {
 	txMarker string
 }
 
-//var _ usecase.TxManagerInterface = (*TxManager)(nil)
+var _ usecase.TxManagerInterface = (*TxManager)(nil)
 
 func NewTxManager(pgPool *pgxpool.Pool, logger logger.LoggerInterface, txMarker string) *TxManager {
 	return &TxManager{
@@ -46,10 +47,8 @@ func (txM *TxManager) WithinTx(ctx context.Context, fn func(context.Context) err
 	}
 
 	txCtx := context.WithValue(ctx, txM.txMarker, tx)
-	err = fn(txCtx)
-	if err != nil {
-		errR := tx.Rollback(txCtx)
-		if errR != nil {
+	if err := fn(txCtx); err != nil {
+		if errR := tx.Rollback(txCtx); errR != nil {
 			txM.logger.Error("failed to rollback transaction", map[string]any{
 				"error": errR.Error(),
 			})
@@ -57,8 +56,7 @@ func (txM *TxManager) WithinTx(ctx context.Context, fn func(context.Context) err
 		return err
 	}
 
-	err = tx.Commit(txCtx)
-	if err != nil {
+	if err := tx.Commit(txCtx); err != nil {
 		txM.logger.Error("failed to commit transaction", map[string]any{
 			"error": err.Error(),
 		})

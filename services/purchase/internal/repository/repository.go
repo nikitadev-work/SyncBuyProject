@@ -4,6 +4,7 @@ import (
 	"context"
 	"purchase/internal/domain"
 	uc "purchase/internal/usecase"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -35,14 +36,12 @@ func (repo *Repository) CreatePurchase(ctx context.Context,
 
 	if ok {
 		// Command within transaction
-		_, err = tx.Exec(ctx, reqStr, purchaseId, in.Title, in.Description, in.Currency)
-		if err != nil {
+		if _, err = tx.Exec(ctx, reqStr, purchaseId, in.Title, in.Description, in.Currency); err != nil {
 			return nil, err
 		}
 	} else {
 		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, purchaseId, in.Title, in.Description, in.Currency)
-		if err != nil {
+		if _, err := repo.pgPool.Exec(ctx, reqStr, purchaseId, in.Title, in.Description, in.Currency); err != nil {
 			return nil, err
 		}
 	}
@@ -62,10 +61,8 @@ func (repo *Repository) GetPurchase(ctx context.Context,
 	var err error
 
 	if ok {
-		// Command within transaction
 		res = tx.QueryRow(ctx, reqStr, input.PurchaseId)
 	} else {
-		// Command without transaction
 		res = repo.pgPool.QueryRow(ctx, reqStr, input.PurchaseId)
 	}
 
@@ -87,17 +84,35 @@ func (repo *Repository) AddParticipantToPurchase(ctx context.Context,
 	input *uc.AddParticipantToPurchaseRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
 	reqStr := "INSERT INTO participants (user_id, purchase_id) VALUES ($1, $2)"
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
+	var lockedAt *time.Time
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.UserId, input.PurchaseId)
-		if err != nil {
+		// Check if the purchase is unlocked
+		res := tx.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		// Edit purchase
+		if _, err := tx.Exec(ctx, reqStr, input.UserId, input.PurchaseId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.UserId, input.PurchaseId)
-		if err != nil {
+		// Check if the purchase is unlocked
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		// Edit purchase
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.UserId, input.PurchaseId); err != nil {
 			return err
 		}
 	}
@@ -108,18 +123,31 @@ func (repo *Repository) AddParticipantToPurchase(ctx context.Context,
 func (repo *Repository) RemoveParticipant(ctx context.Context,
 	input *uc.RemoveParticipantRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
 	reqStr := "DELETE FROM participants WHERE user_id = $1 AND purchase_id = $2"
+	var lockedAt *time.Time
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.UserId, input.PurchaseId)
-		if err != nil {
+		res := tx.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+		if _, err := tx.Exec(ctx, reqStr, input.UserId, input.PurchaseId); err != nil {
 			return nil
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.UserId, input.PurchaseId)
-		if err != nil {
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.UserId, input.PurchaseId); err != nil {
 			return nil
 		}
 	}
@@ -136,7 +164,6 @@ func (repo *Repository) ListParticipantsByPurchaseId(ctx context.Context,
 	var err error
 
 	if ok {
-		// Command within transaction
 		rows, err = tx.Query(ctx, reqStr, input.PurchaseId)
 		if err != nil {
 			return nil, err
@@ -145,20 +172,16 @@ func (repo *Repository) ListParticipantsByPurchaseId(ctx context.Context,
 
 		for rows.Next() {
 			var userId uuid.UUID
-			err := rows.Scan(&userId)
-			if err != nil {
+			if err := rows.Scan(&userId); err != nil {
 				return nil, err
 			}
-
 			userIds = append(userIds, userId)
 		}
 
-		err := rows.Err()
-		if err != nil {
+		if err := rows.Err(); err != nil {
 			return nil, err
 		}
 	} else {
-		// Command without transaction
 		rows, err = repo.pgPool.Query(ctx, reqStr, input.PurchaseId)
 		if err != nil {
 			return nil, err
@@ -167,16 +190,13 @@ func (repo *Repository) ListParticipantsByPurchaseId(ctx context.Context,
 
 		for rows.Next() {
 			var userId uuid.UUID
-			err := rows.Scan(&userId)
-			if err != nil {
+			if err := rows.Scan(&userId); err != nil {
 				return nil, err
 			}
-
 			userIds = append(userIds, userId)
 		}
 
-		err := rows.Err()
-		if err != nil {
+		if err := rows.Err(); err != nil {
 			return nil, err
 		}
 	}
@@ -190,19 +210,35 @@ func (repo *Repository) ListParticipantsByPurchaseId(ctx context.Context,
 func (repo *Repository) CreateTask(ctx context.Context,
 	input *uc.CreateTaskRequestDTO) (*uc.CreateTaskResponseDTO, error) {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
 	reqStr := "INSERT INTO tasks (id, title, description, purchaseId, authorUserId, amount)" +
 		" VALUES ($1, $2, $3, $4, $5, $6)"
 	taskId := uuid.New()
+	var lockedAt *time.Time
 
 	if ok {
-		// Command within transaction
+		res := tx.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return nil, err
+		}
+		if lockedAt != nil {
+			return nil, ErrEditLockedPurchase
+		}
+
 		_, err := tx.Exec(ctx, reqStr, taskId, input.Title, input.Description, input.PurchaseId,
 			input.AuthorUserId, input.Amount)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		// Command without transaction
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return nil, err
+		}
+		if lockedAt != nil {
+			return nil, ErrEditLockedPurchase
+		}
+
 		_, err := repo.pgPool.Exec(ctx, reqStr, taskId, input.Title, input.Description, input.PurchaseId,
 			input.AuthorUserId, input.Amount)
 		if err != nil {
@@ -218,17 +254,45 @@ func (repo *Repository) CreateTask(ctx context.Context,
 func (repo *Repository) TakeTask(ctx context.Context, input *uc.TakeTaskRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
 	reqStr := "UPDATE tasks SET executor_user_id = $1 WHERE id = $2"
+	reqTaskStr := "SELECT purchase_id FROM tasks WHERE id = $1"
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
+	var lockedAt *time.Time
+	var purchaseId uuid.UUID
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.UserId, input.TaskId)
-		if err != nil {
+		// Get PurchaseId by TaskId
+		row := tx.QueryRow(ctx, reqTaskStr, input.TaskId)
+		if err := row.Scan(&purchaseId); err != nil {
+			return err
+		}
+
+		res := tx.QueryRow(ctx, reqCheckStr, purchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := tx.Exec(ctx, reqStr, input.UserId, input.TaskId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.UserId, input.TaskId)
-		if err != nil {
+		// Get PurchaseId by TaskId
+		row := repo.pgPool.QueryRow(ctx, reqTaskStr, input.TaskId)
+		if err := row.Scan(&purchaseId); err != nil {
+			return err
+		}
+
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, purchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.UserId, input.TaskId); err != nil {
 			return err
 		}
 	}
@@ -239,17 +303,45 @@ func (repo *Repository) TakeTask(ctx context.Context, input *uc.TakeTaskRequestD
 func (repo *Repository) DeleteTask(ctx context.Context, input *uc.DeleteTaskRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
 	reqStr := "DELETE FROM tasks WHERE id = $1"
+	reqTaskStr := "SELECT purchase_id FROM tasks WHERE id = $1"
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
+	var lockedAt *time.Time
+	var purchaseId uuid.UUID
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.TaskId)
-		if err != nil {
+		// Get PurchaseId by TaskId
+		row := tx.QueryRow(ctx, reqTaskStr, input.TaskId)
+		if err := row.Scan(&purchaseId); err != nil {
+			return err
+		}
+
+		res := tx.QueryRow(ctx, reqCheckStr, purchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := tx.Exec(ctx, reqStr, input.TaskId); err != nil {
 			return nil
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.TaskId)
-		if err != nil {
+		// Get PurchaseId by TaskId
+		row := repo.pgPool.QueryRow(ctx, reqTaskStr, input.TaskId)
+		if err := row.Scan(&purchaseId); err != nil {
+			return err
+		}
+
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, purchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.TaskId); err != nil {
 			return nil
 		}
 	}
@@ -266,7 +358,6 @@ func (repo *Repository) ListTasksByPurchaseId(ctx context.Context,
 	var err error
 
 	if ok {
-		// Command within transaction
 		rows, err = tx.Query(ctx, reqStr, input.PurchaseId)
 		if err != nil {
 			return nil, err
@@ -280,16 +371,13 @@ func (repo *Repository) ListTasksByPurchaseId(ctx context.Context,
 			if err != nil {
 				return nil, err
 			}
-
 			tasks = append(tasks, task)
 		}
 
-		err := rows.Err()
-		if err != nil {
+		if err := rows.Err(); err != nil {
 			return nil, err
 		}
 	} else {
-		// Command without transaction
 		rows, err = repo.pgPool.Query(ctx, reqStr, input.PurchaseId)
 		if err != nil {
 			return nil, err
@@ -303,12 +391,10 @@ func (repo *Repository) ListTasksByPurchaseId(ctx context.Context,
 			if err != nil {
 				return nil, err
 			}
-
 			tasks = append(tasks, task)
 		}
 
-		err := rows.Err()
-		if err != nil {
+		if err := rows.Err(); err != nil {
 			return nil, err
 		}
 	}
@@ -321,17 +407,45 @@ func (repo *Repository) ListTasksByPurchaseId(ctx context.Context,
 func (repo *Repository) MarkTaskAsDone(ctx context.Context, input *uc.MarkTaskAsDoneRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
 	reqStr := "UPDATE tasks SET done = true WHERE id = $1"
+	reqTaskStr := "SELECT purchase_id FROM tasks WHERE id = $1"
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
+	var lockedAt *time.Time
+	var purchaseId uuid.UUID
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.TaskId)
-		if err != nil {
+		// Get PurchaseId by TaskId
+		row := tx.QueryRow(ctx, reqTaskStr, input.TaskId)
+		if err := row.Scan(&purchaseId); err != nil {
+			return err
+		}
+
+		res := tx.QueryRow(ctx, reqCheckStr, purchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := tx.Exec(ctx, reqStr, input.TaskId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.TaskId)
-		if err != nil {
+		// Get PurchaseId by TaskId
+		row := repo.pgPool.QueryRow(ctx, reqTaskStr, input.TaskId)
+		if err := row.Scan(&purchaseId); err != nil {
+			return err
+		}
+
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, purchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrEditLockedPurchase
+		}
+
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.TaskId); err != nil {
 			return err
 		}
 	}
@@ -343,17 +457,31 @@ func (repo *Repository) MarkTaskAsDone(ctx context.Context, input *uc.MarkTaskAs
 func (repo *Repository) LockPurchase(ctx context.Context, input *uc.LockPurchaseRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
 	reqStr := "UPDATE purchases SET locked_at = CURRENT_TIMESTAMP WHERE id = $1"
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
+	var lockedAt *time.Time
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		res := tx.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrLockPurchase
+		}
+
+		if _, err := tx.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		res := repo.pgPool.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt != nil {
+			return ErrLockPurchase
+		}
+
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	}
@@ -363,18 +491,30 @@ func (repo *Repository) LockPurchase(ctx context.Context, input *uc.LockPurchase
 
 func (repo *Repository) UnlockPurchase(ctx context.Context, input *uc.UnlockPurchaseRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
+	reqCheckStr := "SELECT settlement_initiated_at FROM purchases WHERE id = $1"
 	reqStr := "UPDATE purchases SET locked_at = NULL WHERE id = $1"
+	var settlementInitiatedAt *time.Time
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		res := tx.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&settlementInitiatedAt); err != nil {
+			return err
+		}
+		if settlementInitiatedAt != nil {
+			return ErrUnlockPurchase
+		}
+		if _, err := tx.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		res := repo.pgPool.QueryRow(ctx, reqStr, input.PurchaseId)
+		if err := res.Scan(&settlementInitiatedAt); err != nil {
+			return err
+		}
+		if settlementInitiatedAt == nil {
+			return ErrUnlockPurchase
+		}
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	}
@@ -388,15 +528,11 @@ func (repo *Repository) MarkSettlementInitiated(ctx context.Context,
 	reqStr := "UPDATE purchases SET settlement_initiated_at = CURRENT_TIMESTAMP WHERE id = $1"
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		if _, err := tx.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	}
@@ -404,20 +540,26 @@ func (repo *Repository) MarkSettlementInitiated(ctx context.Context,
 	return nil
 }
 
+
 func (repo *Repository) FinishPurchase(ctx context.Context, input *uc.FinishPurchaseRequestDTO) error {
 	tx, ok := ctx.Value(repo.txMarker).(pgx.Tx)
+	reqCheckStr := "SELECT locked_at FROM purchases WHERE id = $1"
 	reqStr := "UPDATE purchases SET finished_at = CURRENT_TIMESTAMP WHERE id = $1"
+	var lockedAt *time.Time
 
 	if ok {
-		// Command within transaction
-		_, err := tx.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		res := tx.QueryRow(ctx, reqCheckStr, input.PurchaseId)
+		if err := res.Scan(&lockedAt); err != nil {
+			return err
+		}
+		if lockedAt == nil {
+			return ErrUnlockPurchase
+		}
+		if _, err := tx.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	} else {
-		// Command without transaction
-		_, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId)
-		if err != nil {
+		if _, err := repo.pgPool.Exec(ctx, reqStr, input.PurchaseId); err != nil {
 			return err
 		}
 	}

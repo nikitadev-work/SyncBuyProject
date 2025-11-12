@@ -3,17 +3,15 @@
 CREATE TABLE purchases (
     id UUID PRIMARY KEY,
     title TEXT NOT NULL,
-    description TEXT NOT NULL,
+    description TEXT,
     currency TEXT NOT NULL,
     settlement_initiated_at TIMESTAMP DEFAULT NULL,
-    status TEXT NOT NULL DEFAULT 'active',
     locked_at TIMESTAMP,
     finished_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
 
     CONSTRAINT right_title CHECK (title <> ''),
-    CONSTRAINT right_status CHECK (status in ('active', 'locked', 'finished')),
     CONSTRAINT right_currency CHECK (currency in ('RUB'))
 );
 

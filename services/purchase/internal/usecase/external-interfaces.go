@@ -1,6 +1,8 @@
 package usecase
 
-import "context"
+import (
+	"context"
+)
 
 type PurchaseRepositoryInterface interface {
 	// Purchase
@@ -28,4 +30,9 @@ type PurchaseRepositoryInterface interface {
 
 type TxManagerInterface interface {
 	WithinTx(context.Context, func(context.Context) error) error
+}
+
+type TokenProviderInterface interface {
+	GenerateInviteToken(*GenerateTokenRequest) (*GenerateTokenResponse, error)
+	ParseAndValidateInviteToken(*ParseTokenRequest) (*ParseTokenResponse, error)
 }

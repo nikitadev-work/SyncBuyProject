@@ -98,7 +98,7 @@ type GetSnapshotInputDTO struct {
 }
 
 type GetSnapshotOutputDTO struct {
-	Snapshot domain.Snapstot
+	Snapshot domain.Snapshot
 }
 
 type MarkSettlementInitiatedInputDTO struct {

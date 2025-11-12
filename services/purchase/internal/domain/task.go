@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 type Task struct {
@@ -16,7 +16,7 @@ type Task struct {
 }
 
 func NewTask(id uuid.UUID, title string, description string,
-	purchaseId uuid.UUID, authorUserId uuid.UUID, executorUserId uuid.UUID,
+	purchaseId uuid.UUID, authorUserId uuid.UUID,
 	done bool, amount int64) *Task {
 	return &Task{
 		Id:             id,
@@ -24,7 +24,6 @@ func NewTask(id uuid.UUID, title string, description string,
 		Description:    description,
 		PurchaseId:     purchaseId,
 		AuthorUserId:   authorUserId,
-		ExecutorUserId: executorUserId,
 		Done:           done,
 		Amount:         amount,
 	}

@@ -19,10 +19,10 @@ type Purchase struct {
 	Title                 string
 	Description           string
 	Currency              string
-	SettlementInitiatedAt time.Time
+	SettlementInitiatedAt *time.Time
 	Status                Status
-	LockedAt              time.Time
-	FinishedAt            time.Time
+	LockedAt              *time.Time
+	FinishedAt            *time.Time
 }
 
 func NewPurchase(id uuid.UUID, title string, description string,
@@ -33,14 +33,14 @@ func NewPurchase(id uuid.UUID, title string, description string,
 		Title:                 title,
 		Description:           description,
 		Currency:              currency,
-		SettlementInitiatedAt: SettlementInitiatedAt,
+		SettlementInitiatedAt: &SettlementInitiatedAt,
 		Status:                status,
-		LockedAt:              lockedAt,
-		FinishedAt:            finishedAt,
+		LockedAt:              &lockedAt,
+		FinishedAt:            &finishedAt,
 	}
 }
 
-type Snapstot struct {
+type Snapshot struct {
 	PurchaseId         uuid.UUID
 	PurchaseTitle      string
 	Currency           string

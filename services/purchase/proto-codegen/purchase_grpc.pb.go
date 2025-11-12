@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	PurchaseService_CreatePurchase_FullMethodName               = "/purchase.PurchaseService/CreatePurchase"
 	PurchaseService_GetPurchase_FullMethodName                  = "/purchase.PurchaseService/GetPurchase"
-	PurchaseService_ListPurchases_FullMethodName                = "/purchase.PurchaseService/ListPurchases"
 	PurchaseService_CreateInvite_FullMethodName                 = "/purchase.PurchaseService/CreateInvite"
 	PurchaseService_JoinByInvite_FullMethodName                 = "/purchase.PurchaseService/JoinByInvite"
 	PurchaseService_RemoveParticipant_FullMethodName            = "/purchase.PurchaseService/RemoveParticipant"
@@ -33,7 +32,6 @@ const (
 	PurchaseService_MarkTaskAsDone_FullMethodName               = "/purchase.PurchaseService/MarkTaskAsDone"
 	PurchaseService_LockPurchase_FullMethodName                 = "/purchase.PurchaseService/LockPurchase"
 	PurchaseService_UnlockPurchase_FullMethodName               = "/purchase.PurchaseService/UnlockPurchase"
-	PurchaseService_CanUnlock_FullMethodName                    = "/purchase.PurchaseService/CanUnlock"
 	PurchaseService_GetSnapshot_FullMethodName                  = "/purchase.PurchaseService/GetSnapshot"
 	PurchaseService_MarkSettlementInitiated_FullMethodName      = "/purchase.PurchaseService/MarkSettlementInitiated"
 	PurchaseService_FinishPurchase_FullMethodName               = "/purchase.PurchaseService/FinishPurchase"
@@ -47,7 +45,6 @@ type PurchaseServiceClient interface {
 	// Purchase
 	CreatePurchase(ctx context.Context, in *CreatePurchaseRequest, opts ...grpc.CallOption) (*CreatePurchaseResponse, error)
 	GetPurchase(ctx context.Context, in *GetPurchaseRequest, opts ...grpc.CallOption) (*GetPurchaseResponse, error)
-	ListPurchases(ctx context.Context, in *ListPurchasesRequest, opts ...grpc.CallOption) (*ListPurchasesResponse, error)
 	// Participant
 	CreateInvite(ctx context.Context, in *CreateInviteRequest, opts ...grpc.CallOption) (*CreateInviteResponse, error)
 	JoinByInvite(ctx context.Context, in *JoinByInviteRequest, opts ...grpc.CallOption) (*JoinByInviteResponse, error)
@@ -62,7 +59,6 @@ type PurchaseServiceClient interface {
 	// Status
 	LockPurchase(ctx context.Context, in *LockPurchaseRequest, opts ...grpc.CallOption) (*LockPurchaseResponse, error)
 	UnlockPurchase(ctx context.Context, in *UnlockPurchaseRequest, opts ...grpc.CallOption) (*UnlockPurchaseResponse, error)
-	CanUnlock(ctx context.Context, in *CanUnlockRequest, opts ...grpc.CallOption) (*CanUnlockResponse, error)
 	GetSnapshot(ctx context.Context, in *GetSnapshotRequest, opts ...grpc.CallOption) (*GetSnapshotResponse, error)
 	MarkSettlementInitiated(ctx context.Context, in *MarkSettlementInitiatedRequest, opts ...grpc.CallOption) (*MarkSettlementInitiatedResponse, error)
 	FinishPurchase(ctx context.Context, in *FinishPurchaseRequest, opts ...grpc.CallOption) (*FinishPurchaseResponse, error)
@@ -92,16 +88,6 @@ func (c *purchaseServiceClient) GetPurchase(ctx context.Context, in *GetPurchase
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetPurchaseResponse)
 	err := c.cc.Invoke(ctx, PurchaseService_GetPurchase_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *purchaseServiceClient) ListPurchases(ctx context.Context, in *ListPurchasesRequest, opts ...grpc.CallOption) (*ListPurchasesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListPurchasesResponse)
-	err := c.cc.Invoke(ctx, PurchaseService_ListPurchases_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -218,16 +204,6 @@ func (c *purchaseServiceClient) UnlockPurchase(ctx context.Context, in *UnlockPu
 	return out, nil
 }
 
-func (c *purchaseServiceClient) CanUnlock(ctx context.Context, in *CanUnlockRequest, opts ...grpc.CallOption) (*CanUnlockResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CanUnlockResponse)
-	err := c.cc.Invoke(ctx, PurchaseService_CanUnlock_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *purchaseServiceClient) GetSnapshot(ctx context.Context, in *GetSnapshotRequest, opts ...grpc.CallOption) (*GetSnapshotResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetSnapshotResponse)
@@ -275,7 +251,6 @@ type PurchaseServiceServer interface {
 	// Purchase
 	CreatePurchase(context.Context, *CreatePurchaseRequest) (*CreatePurchaseResponse, error)
 	GetPurchase(context.Context, *GetPurchaseRequest) (*GetPurchaseResponse, error)
-	ListPurchases(context.Context, *ListPurchasesRequest) (*ListPurchasesResponse, error)
 	// Participant
 	CreateInvite(context.Context, *CreateInviteRequest) (*CreateInviteResponse, error)
 	JoinByInvite(context.Context, *JoinByInviteRequest) (*JoinByInviteResponse, error)
@@ -290,7 +265,6 @@ type PurchaseServiceServer interface {
 	// Status
 	LockPurchase(context.Context, *LockPurchaseRequest) (*LockPurchaseResponse, error)
 	UnlockPurchase(context.Context, *UnlockPurchaseRequest) (*UnlockPurchaseResponse, error)
-	CanUnlock(context.Context, *CanUnlockRequest) (*CanUnlockResponse, error)
 	GetSnapshot(context.Context, *GetSnapshotRequest) (*GetSnapshotResponse, error)
 	MarkSettlementInitiated(context.Context, *MarkSettlementInitiatedRequest) (*MarkSettlementInitiatedResponse, error)
 	FinishPurchase(context.Context, *FinishPurchaseRequest) (*FinishPurchaseResponse, error)
@@ -311,9 +285,6 @@ func (UnimplementedPurchaseServiceServer) CreatePurchase(context.Context, *Creat
 }
 func (UnimplementedPurchaseServiceServer) GetPurchase(context.Context, *GetPurchaseRequest) (*GetPurchaseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPurchase not implemented")
-}
-func (UnimplementedPurchaseServiceServer) ListPurchases(context.Context, *ListPurchasesRequest) (*ListPurchasesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListPurchases not implemented")
 }
 func (UnimplementedPurchaseServiceServer) CreateInvite(context.Context, *CreateInviteRequest) (*CreateInviteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInvite not implemented")
@@ -347,9 +318,6 @@ func (UnimplementedPurchaseServiceServer) LockPurchase(context.Context, *LockPur
 }
 func (UnimplementedPurchaseServiceServer) UnlockPurchase(context.Context, *UnlockPurchaseRequest) (*UnlockPurchaseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnlockPurchase not implemented")
-}
-func (UnimplementedPurchaseServiceServer) CanUnlock(context.Context, *CanUnlockRequest) (*CanUnlockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CanUnlock not implemented")
 }
 func (UnimplementedPurchaseServiceServer) GetSnapshot(context.Context, *GetSnapshotRequest) (*GetSnapshotResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSnapshot not implemented")
@@ -416,24 +384,6 @@ func _PurchaseService_GetPurchase_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PurchaseServiceServer).GetPurchase(ctx, req.(*GetPurchaseRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PurchaseService_ListPurchases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPurchasesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PurchaseServiceServer).ListPurchases(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PurchaseService_ListPurchases_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PurchaseServiceServer).ListPurchases(ctx, req.(*ListPurchasesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -636,24 +586,6 @@ func _PurchaseService_UnlockPurchase_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PurchaseService_CanUnlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CanUnlockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PurchaseServiceServer).CanUnlock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PurchaseService_CanUnlock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PurchaseServiceServer).CanUnlock(ctx, req.(*CanUnlockRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PurchaseService_GetSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSnapshotRequest)
 	if err := dec(in); err != nil {
@@ -742,10 +674,6 @@ var PurchaseService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PurchaseService_GetPurchase_Handler,
 		},
 		{
-			MethodName: "ListPurchases",
-			Handler:    _PurchaseService_ListPurchases_Handler,
-		},
-		{
 			MethodName: "CreateInvite",
 			Handler:    _PurchaseService_CreateInvite_Handler,
 		},
@@ -788,10 +716,6 @@ var PurchaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnlockPurchase",
 			Handler:    _PurchaseService_UnlockPurchase_Handler,
-		},
-		{
-			MethodName: "CanUnlock",
-			Handler:    _PurchaseService_CanUnlock_Handler,
 		},
 		{
 			MethodName: "GetSnapshot",

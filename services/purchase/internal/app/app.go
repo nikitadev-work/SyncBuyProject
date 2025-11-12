@@ -9,10 +9,10 @@ import (
 	"purchase/config"
 	grpcserver "purchase/internal/adapters/grpc"
 	httpserver "purchase/internal/adapters/http"
+	tokenprovider "purchase/internal/adapters/token-provider"
 	txmanager "purchase/internal/adapters/txmanager"
 	repo "purchase/internal/repository"
 	purchasepb "purchase/proto-codegen"
-	"strconv"
 	"sync"
 	"time"
 
@@ -43,12 +43,16 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	}
 
 	// postgresql
+	sslMode := "require"
+	if !cfg.PostgreSQL.SslEnabled {
+		sslMode = "disable"
+	}
 	dbUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		cfg.PostgreSQL.User, cfg.PostgreSQL.Password, cfg.PostgreSQL.Host,
-		cfg.PostgreSQL.Port, cfg.PostgreSQL.Name, strconv.FormatBool(cfg.PostgreSQL.SslEnabled))
+		cfg.PostgreSQL.Port, cfg.PostgreSQL.Name, sslMode)
 	pool, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
-		l.Error("unable to create connection pool: %v\n", map[string]any{
+		l.Error("unable to create connection pool", map[string]any{
 			"error": err.Error(),
 		})
 		return err
@@ -61,8 +65,11 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	// txmanager
 	txManager := txmanager.NewTxManager(pool, l, cfg.PostgreSQL.TxMarker)
 
+	// token provider
+	tokenProvider := tokenprovider.NewTokenProvider(cfg.SecretKey)
+
 	// usecase
-	usecase := uc.NewPurchaseUsecase(repository, txManager)
+	usecase := uc.NewPurchaseUsecase(repository, txManager, tokenProvider)
 
 	// grpc
 	srv := grpc.NewServer()
@@ -77,8 +84,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	grpcErrCh := make(chan error, 1)
 	go func() {
 		l.Info("start grpc server", nil)
-		err := srv.Serve(lis)
-		if err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+		if err := srv.Serve(lis); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
 			grpcErrCh <- err
 		}
 	}()
@@ -91,8 +97,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	httpErrCh := make(chan error, 1)
 	go func() {
 		l.Info("start http server", nil)
-		err := httpServer.ListenAndServe()
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			httpErrCh <- err
 		}
 	}()
@@ -110,7 +115,6 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	select {
 	case <-ctx.Done():
 		l.Info("starting graceful shutdown", nil)
-
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 		done := make(chan struct{})
@@ -128,9 +132,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 			// http server
 			go func() {
 				defer wg.Done()
-
-				err := httpServer.Shutdown(shutdownCtx)
-				if err != nil {
+				if err := httpServer.Shutdown(shutdownCtx); err != nil {
 					l.Error("http server graceful shutdown error", map[string]any{
 						"error": err.Error(),
 					})
@@ -149,7 +151,6 @@ func Run(ctx context.Context, cfg *config.Config) error {
 		case <-shutdownCtx.Done():
 			srv.Stop()
 			httpServer.Close()
-
 			err := errors.New("graceful shutdown timeout")
 			l.Error("graceful shutdown error", map[string]any{
 				"error": err.Error(),

@@ -491,94 +491,6 @@ func (x *GetPurchaseResponse) GetPurchase() *Purchase {
 	return nil
 }
 
-type ListPurchasesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Empty         *emptypb.Empty         `protobuf:"bytes,1,opt,name=empty,proto3" json:"empty,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListPurchasesRequest) Reset() {
-	*x = ListPurchasesRequest{}
-	mi := &file_purchase_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListPurchasesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListPurchasesRequest) ProtoMessage() {}
-
-func (x *ListPurchasesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListPurchasesRequest.ProtoReflect.Descriptor instead.
-func (*ListPurchasesRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *ListPurchasesRequest) GetEmpty() *emptypb.Empty {
-	if x != nil {
-		return x.Empty
-	}
-	return nil
-}
-
-type ListPurchasesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Purchases     []*Purchase            `protobuf:"bytes,1,rep,name=purchases,proto3" json:"purchases,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListPurchasesResponse) Reset() {
-	*x = ListPurchasesResponse{}
-	mi := &file_purchase_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListPurchasesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListPurchasesResponse) ProtoMessage() {}
-
-func (x *ListPurchasesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListPurchasesResponse.ProtoReflect.Descriptor instead.
-func (*ListPurchasesResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *ListPurchasesResponse) GetPurchases() []*Purchase {
-	if x != nil {
-		return x.Purchases
-	}
-	return nil
-}
-
 type CreateInviteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PurchaseId    string                 `protobuf:"bytes,3,opt,name=purchase_id,json=purchaseId,proto3" json:"purchase_id,omitempty"`
@@ -588,7 +500,7 @@ type CreateInviteRequest struct {
 
 func (x *CreateInviteRequest) Reset() {
 	*x = CreateInviteRequest{}
-	mi := &file_purchase_proto_msgTypes[9]
+	mi := &file_purchase_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +512,7 @@ func (x *CreateInviteRequest) String() string {
 func (*CreateInviteRequest) ProtoMessage() {}
 
 func (x *CreateInviteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[9]
+	mi := &file_purchase_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +525,7 @@ func (x *CreateInviteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInviteRequest.ProtoReflect.Descriptor instead.
 func (*CreateInviteRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{9}
+	return file_purchase_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateInviteRequest) GetPurchaseId() string {
@@ -634,7 +546,7 @@ type CreateInviteResponse struct {
 
 func (x *CreateInviteResponse) Reset() {
 	*x = CreateInviteResponse{}
-	mi := &file_purchase_proto_msgTypes[10]
+	mi := &file_purchase_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -646,7 +558,7 @@ func (x *CreateInviteResponse) String() string {
 func (*CreateInviteResponse) ProtoMessage() {}
 
 func (x *CreateInviteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[10]
+	mi := &file_purchase_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -659,7 +571,7 @@ func (x *CreateInviteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInviteResponse.ProtoReflect.Descriptor instead.
 func (*CreateInviteResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{10}
+	return file_purchase_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateInviteResponse) GetToken() string {
@@ -693,7 +605,7 @@ type JoinByInviteRequest struct {
 
 func (x *JoinByInviteRequest) Reset() {
 	*x = JoinByInviteRequest{}
-	mi := &file_purchase_proto_msgTypes[11]
+	mi := &file_purchase_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -705,7 +617,7 @@ func (x *JoinByInviteRequest) String() string {
 func (*JoinByInviteRequest) ProtoMessage() {}
 
 func (x *JoinByInviteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[11]
+	mi := &file_purchase_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -718,7 +630,7 @@ func (x *JoinByInviteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinByInviteRequest.ProtoReflect.Descriptor instead.
 func (*JoinByInviteRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{11}
+	return file_purchase_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *JoinByInviteRequest) GetUserId() string {
@@ -744,7 +656,7 @@ type JoinByInviteResponse struct {
 
 func (x *JoinByInviteResponse) Reset() {
 	*x = JoinByInviteResponse{}
-	mi := &file_purchase_proto_msgTypes[12]
+	mi := &file_purchase_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -756,7 +668,7 @@ func (x *JoinByInviteResponse) String() string {
 func (*JoinByInviteResponse) ProtoMessage() {}
 
 func (x *JoinByInviteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[12]
+	mi := &file_purchase_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -769,7 +681,7 @@ func (x *JoinByInviteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinByInviteResponse.ProtoReflect.Descriptor instead.
 func (*JoinByInviteResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{12}
+	return file_purchase_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *JoinByInviteResponse) GetEmpty() *emptypb.Empty {
@@ -789,7 +701,7 @@ type RemoveParticipantRequest struct {
 
 func (x *RemoveParticipantRequest) Reset() {
 	*x = RemoveParticipantRequest{}
-	mi := &file_purchase_proto_msgTypes[13]
+	mi := &file_purchase_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -801,7 +713,7 @@ func (x *RemoveParticipantRequest) String() string {
 func (*RemoveParticipantRequest) ProtoMessage() {}
 
 func (x *RemoveParticipantRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[13]
+	mi := &file_purchase_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -814,7 +726,7 @@ func (x *RemoveParticipantRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveParticipantRequest.ProtoReflect.Descriptor instead.
 func (*RemoveParticipantRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{13}
+	return file_purchase_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RemoveParticipantRequest) GetUserId() string {
@@ -840,7 +752,7 @@ type RemoveParticipantResponse struct {
 
 func (x *RemoveParticipantResponse) Reset() {
 	*x = RemoveParticipantResponse{}
-	mi := &file_purchase_proto_msgTypes[14]
+	mi := &file_purchase_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -852,7 +764,7 @@ func (x *RemoveParticipantResponse) String() string {
 func (*RemoveParticipantResponse) ProtoMessage() {}
 
 func (x *RemoveParticipantResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[14]
+	mi := &file_purchase_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -865,7 +777,7 @@ func (x *RemoveParticipantResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveParticipantResponse.ProtoReflect.Descriptor instead.
 func (*RemoveParticipantResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{14}
+	return file_purchase_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *RemoveParticipantResponse) GetEmpty() *emptypb.Empty {
@@ -884,7 +796,7 @@ type ListParticipantsByPurchaseIdRequest struct {
 
 func (x *ListParticipantsByPurchaseIdRequest) Reset() {
 	*x = ListParticipantsByPurchaseIdRequest{}
-	mi := &file_purchase_proto_msgTypes[15]
+	mi := &file_purchase_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -896,7 +808,7 @@ func (x *ListParticipantsByPurchaseIdRequest) String() string {
 func (*ListParticipantsByPurchaseIdRequest) ProtoMessage() {}
 
 func (x *ListParticipantsByPurchaseIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[15]
+	mi := &file_purchase_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -909,7 +821,7 @@ func (x *ListParticipantsByPurchaseIdRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ListParticipantsByPurchaseIdRequest.ProtoReflect.Descriptor instead.
 func (*ListParticipantsByPurchaseIdRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{15}
+	return file_purchase_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListParticipantsByPurchaseIdRequest) GetPurchaseId() string {
@@ -928,7 +840,7 @@ type ListParticipantsByPurchaseIdResponse struct {
 
 func (x *ListParticipantsByPurchaseIdResponse) Reset() {
 	*x = ListParticipantsByPurchaseIdResponse{}
-	mi := &file_purchase_proto_msgTypes[16]
+	mi := &file_purchase_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -940,7 +852,7 @@ func (x *ListParticipantsByPurchaseIdResponse) String() string {
 func (*ListParticipantsByPurchaseIdResponse) ProtoMessage() {}
 
 func (x *ListParticipantsByPurchaseIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[16]
+	mi := &file_purchase_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -953,7 +865,7 @@ func (x *ListParticipantsByPurchaseIdResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ListParticipantsByPurchaseIdResponse.ProtoReflect.Descriptor instead.
 func (*ListParticipantsByPurchaseIdResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{16}
+	return file_purchase_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListParticipantsByPurchaseIdResponse) GetUserIds() []string {
@@ -976,7 +888,7 @@ type CreateTaskRequest struct {
 
 func (x *CreateTaskRequest) Reset() {
 	*x = CreateTaskRequest{}
-	mi := &file_purchase_proto_msgTypes[17]
+	mi := &file_purchase_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -988,7 +900,7 @@ func (x *CreateTaskRequest) String() string {
 func (*CreateTaskRequest) ProtoMessage() {}
 
 func (x *CreateTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[17]
+	mi := &file_purchase_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1001,7 +913,7 @@ func (x *CreateTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTaskRequest.ProtoReflect.Descriptor instead.
 func (*CreateTaskRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{17}
+	return file_purchase_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateTaskRequest) GetTitle() string {
@@ -1048,7 +960,7 @@ type CreateTaskResponse struct {
 
 func (x *CreateTaskResponse) Reset() {
 	*x = CreateTaskResponse{}
-	mi := &file_purchase_proto_msgTypes[18]
+	mi := &file_purchase_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1060,7 +972,7 @@ func (x *CreateTaskResponse) String() string {
 func (*CreateTaskResponse) ProtoMessage() {}
 
 func (x *CreateTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[18]
+	mi := &file_purchase_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1073,7 +985,7 @@ func (x *CreateTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTaskResponse.ProtoReflect.Descriptor instead.
 func (*CreateTaskResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{18}
+	return file_purchase_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CreateTaskResponse) GetTaskId() string {
@@ -1093,7 +1005,7 @@ type TakeTaskRequest struct {
 
 func (x *TakeTaskRequest) Reset() {
 	*x = TakeTaskRequest{}
-	mi := &file_purchase_proto_msgTypes[19]
+	mi := &file_purchase_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1105,7 +1017,7 @@ func (x *TakeTaskRequest) String() string {
 func (*TakeTaskRequest) ProtoMessage() {}
 
 func (x *TakeTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[19]
+	mi := &file_purchase_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1118,7 +1030,7 @@ func (x *TakeTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TakeTaskRequest.ProtoReflect.Descriptor instead.
 func (*TakeTaskRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{19}
+	return file_purchase_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *TakeTaskRequest) GetTaskId() string {
@@ -1144,7 +1056,7 @@ type TakeTaskResponse struct {
 
 func (x *TakeTaskResponse) Reset() {
 	*x = TakeTaskResponse{}
-	mi := &file_purchase_proto_msgTypes[20]
+	mi := &file_purchase_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1156,7 +1068,7 @@ func (x *TakeTaskResponse) String() string {
 func (*TakeTaskResponse) ProtoMessage() {}
 
 func (x *TakeTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[20]
+	mi := &file_purchase_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1169,7 +1081,7 @@ func (x *TakeTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TakeTaskResponse.ProtoReflect.Descriptor instead.
 func (*TakeTaskResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{20}
+	return file_purchase_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *TakeTaskResponse) GetEmpty() *emptypb.Empty {
@@ -1188,7 +1100,7 @@ type DeleteTaskRequest struct {
 
 func (x *DeleteTaskRequest) Reset() {
 	*x = DeleteTaskRequest{}
-	mi := &file_purchase_proto_msgTypes[21]
+	mi := &file_purchase_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1200,7 +1112,7 @@ func (x *DeleteTaskRequest) String() string {
 func (*DeleteTaskRequest) ProtoMessage() {}
 
 func (x *DeleteTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[21]
+	mi := &file_purchase_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1213,7 +1125,7 @@ func (x *DeleteTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTaskRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTaskRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{21}
+	return file_purchase_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *DeleteTaskRequest) GetTaskId() string {
@@ -1232,7 +1144,7 @@ type DeleteTaskResponse struct {
 
 func (x *DeleteTaskResponse) Reset() {
 	*x = DeleteTaskResponse{}
-	mi := &file_purchase_proto_msgTypes[22]
+	mi := &file_purchase_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1244,7 +1156,7 @@ func (x *DeleteTaskResponse) String() string {
 func (*DeleteTaskResponse) ProtoMessage() {}
 
 func (x *DeleteTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[22]
+	mi := &file_purchase_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1257,7 +1169,7 @@ func (x *DeleteTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTaskResponse.ProtoReflect.Descriptor instead.
 func (*DeleteTaskResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{22}
+	return file_purchase_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DeleteTaskResponse) GetEmpty() *emptypb.Empty {
@@ -1276,7 +1188,7 @@ type ListTasksByPurchaseIdRequest struct {
 
 func (x *ListTasksByPurchaseIdRequest) Reset() {
 	*x = ListTasksByPurchaseIdRequest{}
-	mi := &file_purchase_proto_msgTypes[23]
+	mi := &file_purchase_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1288,7 +1200,7 @@ func (x *ListTasksByPurchaseIdRequest) String() string {
 func (*ListTasksByPurchaseIdRequest) ProtoMessage() {}
 
 func (x *ListTasksByPurchaseIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[23]
+	mi := &file_purchase_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1301,7 +1213,7 @@ func (x *ListTasksByPurchaseIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTasksByPurchaseIdRequest.ProtoReflect.Descriptor instead.
 func (*ListTasksByPurchaseIdRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{23}
+	return file_purchase_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ListTasksByPurchaseIdRequest) GetPurchaseId() string {
@@ -1320,7 +1232,7 @@ type ListTasksByPurchaseIdResponse struct {
 
 func (x *ListTasksByPurchaseIdResponse) Reset() {
 	*x = ListTasksByPurchaseIdResponse{}
-	mi := &file_purchase_proto_msgTypes[24]
+	mi := &file_purchase_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1332,7 +1244,7 @@ func (x *ListTasksByPurchaseIdResponse) String() string {
 func (*ListTasksByPurchaseIdResponse) ProtoMessage() {}
 
 func (x *ListTasksByPurchaseIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[24]
+	mi := &file_purchase_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1345,7 +1257,7 @@ func (x *ListTasksByPurchaseIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTasksByPurchaseIdResponse.ProtoReflect.Descriptor instead.
 func (*ListTasksByPurchaseIdResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{24}
+	return file_purchase_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListTasksByPurchaseIdResponse) GetTasks() []*Task {
@@ -1364,7 +1276,7 @@ type MarkTaskAsDoneRequest struct {
 
 func (x *MarkTaskAsDoneRequest) Reset() {
 	*x = MarkTaskAsDoneRequest{}
-	mi := &file_purchase_proto_msgTypes[25]
+	mi := &file_purchase_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1376,7 +1288,7 @@ func (x *MarkTaskAsDoneRequest) String() string {
 func (*MarkTaskAsDoneRequest) ProtoMessage() {}
 
 func (x *MarkTaskAsDoneRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[25]
+	mi := &file_purchase_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1389,7 +1301,7 @@ func (x *MarkTaskAsDoneRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkTaskAsDoneRequest.ProtoReflect.Descriptor instead.
 func (*MarkTaskAsDoneRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{25}
+	return file_purchase_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *MarkTaskAsDoneRequest) GetTaskId() string {
@@ -1408,7 +1320,7 @@ type MarkTaskAsDoneResponse struct {
 
 func (x *MarkTaskAsDoneResponse) Reset() {
 	*x = MarkTaskAsDoneResponse{}
-	mi := &file_purchase_proto_msgTypes[26]
+	mi := &file_purchase_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1420,7 +1332,7 @@ func (x *MarkTaskAsDoneResponse) String() string {
 func (*MarkTaskAsDoneResponse) ProtoMessage() {}
 
 func (x *MarkTaskAsDoneResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[26]
+	mi := &file_purchase_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1433,7 +1345,7 @@ func (x *MarkTaskAsDoneResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkTaskAsDoneResponse.ProtoReflect.Descriptor instead.
 func (*MarkTaskAsDoneResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{26}
+	return file_purchase_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *MarkTaskAsDoneResponse) GetEmpty() *emptypb.Empty {
@@ -1452,7 +1364,7 @@ type LockPurchaseRequest struct {
 
 func (x *LockPurchaseRequest) Reset() {
 	*x = LockPurchaseRequest{}
-	mi := &file_purchase_proto_msgTypes[27]
+	mi := &file_purchase_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1464,7 +1376,7 @@ func (x *LockPurchaseRequest) String() string {
 func (*LockPurchaseRequest) ProtoMessage() {}
 
 func (x *LockPurchaseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[27]
+	mi := &file_purchase_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1477,7 +1389,7 @@ func (x *LockPurchaseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockPurchaseRequest.ProtoReflect.Descriptor instead.
 func (*LockPurchaseRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{27}
+	return file_purchase_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *LockPurchaseRequest) GetPurchaseId() string {
@@ -1496,7 +1408,7 @@ type LockPurchaseResponse struct {
 
 func (x *LockPurchaseResponse) Reset() {
 	*x = LockPurchaseResponse{}
-	mi := &file_purchase_proto_msgTypes[28]
+	mi := &file_purchase_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1508,7 +1420,7 @@ func (x *LockPurchaseResponse) String() string {
 func (*LockPurchaseResponse) ProtoMessage() {}
 
 func (x *LockPurchaseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[28]
+	mi := &file_purchase_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1521,7 +1433,7 @@ func (x *LockPurchaseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockPurchaseResponse.ProtoReflect.Descriptor instead.
 func (*LockPurchaseResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{28}
+	return file_purchase_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *LockPurchaseResponse) GetEmpty() *emptypb.Empty {
@@ -1540,7 +1452,7 @@ type UnlockPurchaseRequest struct {
 
 func (x *UnlockPurchaseRequest) Reset() {
 	*x = UnlockPurchaseRequest{}
-	mi := &file_purchase_proto_msgTypes[29]
+	mi := &file_purchase_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1552,7 +1464,7 @@ func (x *UnlockPurchaseRequest) String() string {
 func (*UnlockPurchaseRequest) ProtoMessage() {}
 
 func (x *UnlockPurchaseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[29]
+	mi := &file_purchase_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1565,7 +1477,7 @@ func (x *UnlockPurchaseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlockPurchaseRequest.ProtoReflect.Descriptor instead.
 func (*UnlockPurchaseRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{29}
+	return file_purchase_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *UnlockPurchaseRequest) GetPurchaseId() string {
@@ -1584,7 +1496,7 @@ type UnlockPurchaseResponse struct {
 
 func (x *UnlockPurchaseResponse) Reset() {
 	*x = UnlockPurchaseResponse{}
-	mi := &file_purchase_proto_msgTypes[30]
+	mi := &file_purchase_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1596,7 +1508,7 @@ func (x *UnlockPurchaseResponse) String() string {
 func (*UnlockPurchaseResponse) ProtoMessage() {}
 
 func (x *UnlockPurchaseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[30]
+	mi := &file_purchase_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1609,7 +1521,7 @@ func (x *UnlockPurchaseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlockPurchaseResponse.ProtoReflect.Descriptor instead.
 func (*UnlockPurchaseResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{30}
+	return file_purchase_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *UnlockPurchaseResponse) GetEmpty() *emptypb.Empty {
@@ -1617,94 +1529,6 @@ func (x *UnlockPurchaseResponse) GetEmpty() *emptypb.Empty {
 		return x.Empty
 	}
 	return nil
-}
-
-type CanUnlockRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PurchaseId    string                 `protobuf:"bytes,1,opt,name=purchase_id,json=purchaseId,proto3" json:"purchase_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CanUnlockRequest) Reset() {
-	*x = CanUnlockRequest{}
-	mi := &file_purchase_proto_msgTypes[31]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CanUnlockRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CanUnlockRequest) ProtoMessage() {}
-
-func (x *CanUnlockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[31]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CanUnlockRequest.ProtoReflect.Descriptor instead.
-func (*CanUnlockRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{31}
-}
-
-func (x *CanUnlockRequest) GetPurchaseId() string {
-	if x != nil {
-		return x.PurchaseId
-	}
-	return ""
-}
-
-type CanUnlockResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	CanUpdate     bool                   `protobuf:"varint,1,opt,name=can_update,json=canUpdate,proto3" json:"can_update,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CanUnlockResponse) Reset() {
-	*x = CanUnlockResponse{}
-	mi := &file_purchase_proto_msgTypes[32]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CanUnlockResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CanUnlockResponse) ProtoMessage() {}
-
-func (x *CanUnlockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[32]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CanUnlockResponse.ProtoReflect.Descriptor instead.
-func (*CanUnlockResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{32}
-}
-
-func (x *CanUnlockResponse) GetCanUpdate() bool {
-	if x != nil {
-		return x.CanUpdate
-	}
-	return false
 }
 
 type GetSnapshotRequest struct {
@@ -1716,7 +1540,7 @@ type GetSnapshotRequest struct {
 
 func (x *GetSnapshotRequest) Reset() {
 	*x = GetSnapshotRequest{}
-	mi := &file_purchase_proto_msgTypes[33]
+	mi := &file_purchase_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1728,7 +1552,7 @@ func (x *GetSnapshotRequest) String() string {
 func (*GetSnapshotRequest) ProtoMessage() {}
 
 func (x *GetSnapshotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[33]
+	mi := &file_purchase_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1741,7 +1565,7 @@ func (x *GetSnapshotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSnapshotRequest.ProtoReflect.Descriptor instead.
 func (*GetSnapshotRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{33}
+	return file_purchase_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetSnapshotRequest) GetPurchaseId() string {
@@ -1760,7 +1584,7 @@ type GetSnapshotResponse struct {
 
 func (x *GetSnapshotResponse) Reset() {
 	*x = GetSnapshotResponse{}
-	mi := &file_purchase_proto_msgTypes[34]
+	mi := &file_purchase_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1772,7 +1596,7 @@ func (x *GetSnapshotResponse) String() string {
 func (*GetSnapshotResponse) ProtoMessage() {}
 
 func (x *GetSnapshotResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[34]
+	mi := &file_purchase_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1785,7 +1609,7 @@ func (x *GetSnapshotResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSnapshotResponse.ProtoReflect.Descriptor instead.
 func (*GetSnapshotResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{34}
+	return file_purchase_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetSnapshotResponse) GetSnapshot() *Snapshot {
@@ -1804,7 +1628,7 @@ type MarkSettlementInitiatedRequest struct {
 
 func (x *MarkSettlementInitiatedRequest) Reset() {
 	*x = MarkSettlementInitiatedRequest{}
-	mi := &file_purchase_proto_msgTypes[35]
+	mi := &file_purchase_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1816,7 +1640,7 @@ func (x *MarkSettlementInitiatedRequest) String() string {
 func (*MarkSettlementInitiatedRequest) ProtoMessage() {}
 
 func (x *MarkSettlementInitiatedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[35]
+	mi := &file_purchase_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1829,7 +1653,7 @@ func (x *MarkSettlementInitiatedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkSettlementInitiatedRequest.ProtoReflect.Descriptor instead.
 func (*MarkSettlementInitiatedRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{35}
+	return file_purchase_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *MarkSettlementInitiatedRequest) GetPurchaseId() string {
@@ -1848,7 +1672,7 @@ type MarkSettlementInitiatedResponse struct {
 
 func (x *MarkSettlementInitiatedResponse) Reset() {
 	*x = MarkSettlementInitiatedResponse{}
-	mi := &file_purchase_proto_msgTypes[36]
+	mi := &file_purchase_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1860,7 +1684,7 @@ func (x *MarkSettlementInitiatedResponse) String() string {
 func (*MarkSettlementInitiatedResponse) ProtoMessage() {}
 
 func (x *MarkSettlementInitiatedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[36]
+	mi := &file_purchase_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1873,7 +1697,7 @@ func (x *MarkSettlementInitiatedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkSettlementInitiatedResponse.ProtoReflect.Descriptor instead.
 func (*MarkSettlementInitiatedResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{36}
+	return file_purchase_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *MarkSettlementInitiatedResponse) GetEmpty() *emptypb.Empty {
@@ -1892,7 +1716,7 @@ type FinishPurchaseRequest struct {
 
 func (x *FinishPurchaseRequest) Reset() {
 	*x = FinishPurchaseRequest{}
-	mi := &file_purchase_proto_msgTypes[37]
+	mi := &file_purchase_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1904,7 +1728,7 @@ func (x *FinishPurchaseRequest) String() string {
 func (*FinishPurchaseRequest) ProtoMessage() {}
 
 func (x *FinishPurchaseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[37]
+	mi := &file_purchase_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1917,7 +1741,7 @@ func (x *FinishPurchaseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinishPurchaseRequest.ProtoReflect.Descriptor instead.
 func (*FinishPurchaseRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{37}
+	return file_purchase_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *FinishPurchaseRequest) GetPurchaseId() string {
@@ -1936,7 +1760,7 @@ type FinishPurchaseResponse struct {
 
 func (x *FinishPurchaseResponse) Reset() {
 	*x = FinishPurchaseResponse{}
-	mi := &file_purchase_proto_msgTypes[38]
+	mi := &file_purchase_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1948,7 +1772,7 @@ func (x *FinishPurchaseResponse) String() string {
 func (*FinishPurchaseResponse) ProtoMessage() {}
 
 func (x *FinishPurchaseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[38]
+	mi := &file_purchase_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1961,7 +1785,7 @@ func (x *FinishPurchaseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinishPurchaseResponse.ProtoReflect.Descriptor instead.
 func (*FinishPurchaseResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{38}
+	return file_purchase_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *FinishPurchaseResponse) GetEmpty() *emptypb.Empty {
@@ -1980,7 +1804,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_purchase_proto_msgTypes[39]
+	mi := &file_purchase_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1992,7 +1816,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[39]
+	mi := &file_purchase_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2005,7 +1829,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{39}
+	return file_purchase_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *HealthRequest) GetEmpty() *emptypb.Empty {
@@ -2024,7 +1848,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_purchase_proto_msgTypes[40]
+	mi := &file_purchase_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2036,7 +1860,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_purchase_proto_msgTypes[40]
+	mi := &file_purchase_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2049,7 +1873,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_purchase_proto_rawDescGZIP(), []int{40}
+	return file_purchase_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -2102,11 +1926,7 @@ const file_purchase_proto_rawDesc = "" +
 	"\vpurchase_id\x18\x01 \x01(\tR\n" +
 	"purchaseId\"E\n" +
 	"\x13GetPurchaseResponse\x12.\n" +
-	"\bpurchase\x18\x01 \x01(\v2\x12.purchase.PurchaseR\bpurchase\"D\n" +
-	"\x14ListPurchasesRequest\x12,\n" +
-	"\x05empty\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\x05empty\"I\n" +
-	"\x15ListPurchasesResponse\x120\n" +
-	"\tpurchases\x18\x01 \x03(\v2\x12.purchase.PurchaseR\tpurchases\"6\n" +
+	"\bpurchase\x18\x01 \x01(\v2\x12.purchase.PurchaseR\bpurchase\"6\n" +
 	"\x13CreateInviteRequest\x12\x1f\n" +
 	"\vpurchase_id\x18\x03 \x01(\tR\n" +
 	"purchaseId\"d\n" +
@@ -2166,13 +1986,7 @@ const file_purchase_proto_rawDesc = "" +
 	"\vpurchase_id\x18\x01 \x01(\tR\n" +
 	"purchaseId\"F\n" +
 	"\x16UnlockPurchaseResponse\x12,\n" +
-	"\x05empty\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\x05empty\"3\n" +
-	"\x10CanUnlockRequest\x12\x1f\n" +
-	"\vpurchase_id\x18\x01 \x01(\tR\n" +
-	"purchaseId\"2\n" +
-	"\x11CanUnlockResponse\x12\x1d\n" +
-	"\n" +
-	"can_update\x18\x01 \x01(\bR\tcanUpdate\"5\n" +
+	"\x05empty\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\x05empty\"5\n" +
 	"\x12GetSnapshotRequest\x12\x1f\n" +
 	"\vpurchase_id\x18\x01 \x01(\tR\n" +
 	"purchaseId\"E\n" +
@@ -2191,11 +2005,10 @@ const file_purchase_proto_rawDesc = "" +
 	"\rHealthRequest\x12,\n" +
 	"\x05empty\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\x05empty\"(\n" +
 	"\x0eHealthResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2\xf1\f\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status2\xd5\v\n" +
 	"\x0fPurchaseService\x12U\n" +
 	"\x0eCreatePurchase\x12\x1f.purchase.CreatePurchaseRequest\x1a .purchase.CreatePurchaseResponse\"\x00\x12L\n" +
-	"\vGetPurchase\x12\x1c.purchase.GetPurchaseRequest\x1a\x1d.purchase.GetPurchaseResponse\"\x00\x12R\n" +
-	"\rListPurchases\x12\x1e.purchase.ListPurchasesRequest\x1a\x1f.purchase.ListPurchasesResponse\"\x00\x12O\n" +
+	"\vGetPurchase\x12\x1c.purchase.GetPurchaseRequest\x1a\x1d.purchase.GetPurchaseResponse\"\x00\x12O\n" +
 	"\fCreateInvite\x12\x1d.purchase.CreateInviteRequest\x1a\x1e.purchase.CreateInviteResponse\"\x00\x12O\n" +
 	"\fJoinByInvite\x12\x1d.purchase.JoinByInviteRequest\x1a\x1e.purchase.JoinByInviteResponse\"\x00\x12^\n" +
 	"\x11RemoveParticipant\x12\".purchase.RemoveParticipantRequest\x1a#.purchase.RemoveParticipantResponse\"\x00\x12\x7f\n" +
@@ -2208,8 +2021,7 @@ const file_purchase_proto_rawDesc = "" +
 	"\x15ListTasksByPurchaseId\x12&.purchase.ListTasksByPurchaseIdRequest\x1a'.purchase.ListTasksByPurchaseIdResponse\"\x00\x12U\n" +
 	"\x0eMarkTaskAsDone\x12\x1f.purchase.MarkTaskAsDoneRequest\x1a .purchase.MarkTaskAsDoneResponse\"\x00\x12O\n" +
 	"\fLockPurchase\x12\x1d.purchase.LockPurchaseRequest\x1a\x1e.purchase.LockPurchaseResponse\"\x00\x12U\n" +
-	"\x0eUnlockPurchase\x12\x1f.purchase.UnlockPurchaseRequest\x1a .purchase.UnlockPurchaseResponse\"\x00\x12F\n" +
-	"\tCanUnlock\x12\x1a.purchase.CanUnlockRequest\x1a\x1b.purchase.CanUnlockResponse\"\x00\x12L\n" +
+	"\x0eUnlockPurchase\x12\x1f.purchase.UnlockPurchaseRequest\x1a .purchase.UnlockPurchaseResponse\"\x00\x12L\n" +
 	"\vGetSnapshot\x12\x1c.purchase.GetSnapshotRequest\x1a\x1d.purchase.GetSnapshotResponse\"\x00\x12p\n" +
 	"\x17MarkSettlementInitiated\x12(.purchase.MarkSettlementInitiatedRequest\x1a).purchase.MarkSettlementInitiatedResponse\"\x00\x12U\n" +
 	"\x0eFinishPurchase\x12\x1f.purchase.FinishPurchaseRequest\x1a .purchase.FinishPurchaseResponse\"\x00\x12=\n" +
@@ -2227,7 +2039,7 @@ func file_purchase_proto_rawDescGZIP() []byte {
 	return file_purchase_proto_rawDescData
 }
 
-var file_purchase_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
+var file_purchase_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_purchase_proto_goTypes = []any{
 	(*Purchase)(nil),                             // 0: purchase.Purchase
 	(*Task)(nil),                                 // 1: purchase.Task
@@ -2236,106 +2048,96 @@ var file_purchase_proto_goTypes = []any{
 	(*CreatePurchaseResponse)(nil),               // 4: purchase.CreatePurchaseResponse
 	(*GetPurchaseRequest)(nil),                   // 5: purchase.GetPurchaseRequest
 	(*GetPurchaseResponse)(nil),                  // 6: purchase.GetPurchaseResponse
-	(*ListPurchasesRequest)(nil),                 // 7: purchase.ListPurchasesRequest
-	(*ListPurchasesResponse)(nil),                // 8: purchase.ListPurchasesResponse
-	(*CreateInviteRequest)(nil),                  // 9: purchase.CreateInviteRequest
-	(*CreateInviteResponse)(nil),                 // 10: purchase.CreateInviteResponse
-	(*JoinByInviteRequest)(nil),                  // 11: purchase.JoinByInviteRequest
-	(*JoinByInviteResponse)(nil),                 // 12: purchase.JoinByInviteResponse
-	(*RemoveParticipantRequest)(nil),             // 13: purchase.RemoveParticipantRequest
-	(*RemoveParticipantResponse)(nil),            // 14: purchase.RemoveParticipantResponse
-	(*ListParticipantsByPurchaseIdRequest)(nil),  // 15: purchase.ListParticipantsByPurchaseIdRequest
-	(*ListParticipantsByPurchaseIdResponse)(nil), // 16: purchase.ListParticipantsByPurchaseIdResponse
-	(*CreateTaskRequest)(nil),                    // 17: purchase.CreateTaskRequest
-	(*CreateTaskResponse)(nil),                   // 18: purchase.CreateTaskResponse
-	(*TakeTaskRequest)(nil),                      // 19: purchase.TakeTaskRequest
-	(*TakeTaskResponse)(nil),                     // 20: purchase.TakeTaskResponse
-	(*DeleteTaskRequest)(nil),                    // 21: purchase.DeleteTaskRequest
-	(*DeleteTaskResponse)(nil),                   // 22: purchase.DeleteTaskResponse
-	(*ListTasksByPurchaseIdRequest)(nil),         // 23: purchase.ListTasksByPurchaseIdRequest
-	(*ListTasksByPurchaseIdResponse)(nil),        // 24: purchase.ListTasksByPurchaseIdResponse
-	(*MarkTaskAsDoneRequest)(nil),                // 25: purchase.MarkTaskAsDoneRequest
-	(*MarkTaskAsDoneResponse)(nil),               // 26: purchase.MarkTaskAsDoneResponse
-	(*LockPurchaseRequest)(nil),                  // 27: purchase.LockPurchaseRequest
-	(*LockPurchaseResponse)(nil),                 // 28: purchase.LockPurchaseResponse
-	(*UnlockPurchaseRequest)(nil),                // 29: purchase.UnlockPurchaseRequest
-	(*UnlockPurchaseResponse)(nil),               // 30: purchase.UnlockPurchaseResponse
-	(*CanUnlockRequest)(nil),                     // 31: purchase.CanUnlockRequest
-	(*CanUnlockResponse)(nil),                    // 32: purchase.CanUnlockResponse
-	(*GetSnapshotRequest)(nil),                   // 33: purchase.GetSnapshotRequest
-	(*GetSnapshotResponse)(nil),                  // 34: purchase.GetSnapshotResponse
-	(*MarkSettlementInitiatedRequest)(nil),       // 35: purchase.MarkSettlementInitiatedRequest
-	(*MarkSettlementInitiatedResponse)(nil),      // 36: purchase.MarkSettlementInitiatedResponse
-	(*FinishPurchaseRequest)(nil),                // 37: purchase.FinishPurchaseRequest
-	(*FinishPurchaseResponse)(nil),               // 38: purchase.FinishPurchaseResponse
-	(*HealthRequest)(nil),                        // 39: purchase.HealthRequest
-	(*HealthResponse)(nil),                       // 40: purchase.HealthResponse
-	(*timestamppb.Timestamp)(nil),                // 41: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                        // 42: google.protobuf.Empty
+	(*CreateInviteRequest)(nil),                  // 7: purchase.CreateInviteRequest
+	(*CreateInviteResponse)(nil),                 // 8: purchase.CreateInviteResponse
+	(*JoinByInviteRequest)(nil),                  // 9: purchase.JoinByInviteRequest
+	(*JoinByInviteResponse)(nil),                 // 10: purchase.JoinByInviteResponse
+	(*RemoveParticipantRequest)(nil),             // 11: purchase.RemoveParticipantRequest
+	(*RemoveParticipantResponse)(nil),            // 12: purchase.RemoveParticipantResponse
+	(*ListParticipantsByPurchaseIdRequest)(nil),  // 13: purchase.ListParticipantsByPurchaseIdRequest
+	(*ListParticipantsByPurchaseIdResponse)(nil), // 14: purchase.ListParticipantsByPurchaseIdResponse
+	(*CreateTaskRequest)(nil),                    // 15: purchase.CreateTaskRequest
+	(*CreateTaskResponse)(nil),                   // 16: purchase.CreateTaskResponse
+	(*TakeTaskRequest)(nil),                      // 17: purchase.TakeTaskRequest
+	(*TakeTaskResponse)(nil),                     // 18: purchase.TakeTaskResponse
+	(*DeleteTaskRequest)(nil),                    // 19: purchase.DeleteTaskRequest
+	(*DeleteTaskResponse)(nil),                   // 20: purchase.DeleteTaskResponse
+	(*ListTasksByPurchaseIdRequest)(nil),         // 21: purchase.ListTasksByPurchaseIdRequest
+	(*ListTasksByPurchaseIdResponse)(nil),        // 22: purchase.ListTasksByPurchaseIdResponse
+	(*MarkTaskAsDoneRequest)(nil),                // 23: purchase.MarkTaskAsDoneRequest
+	(*MarkTaskAsDoneResponse)(nil),               // 24: purchase.MarkTaskAsDoneResponse
+	(*LockPurchaseRequest)(nil),                  // 25: purchase.LockPurchaseRequest
+	(*LockPurchaseResponse)(nil),                 // 26: purchase.LockPurchaseResponse
+	(*UnlockPurchaseRequest)(nil),                // 27: purchase.UnlockPurchaseRequest
+	(*UnlockPurchaseResponse)(nil),               // 28: purchase.UnlockPurchaseResponse
+	(*GetSnapshotRequest)(nil),                   // 29: purchase.GetSnapshotRequest
+	(*GetSnapshotResponse)(nil),                  // 30: purchase.GetSnapshotResponse
+	(*MarkSettlementInitiatedRequest)(nil),       // 31: purchase.MarkSettlementInitiatedRequest
+	(*MarkSettlementInitiatedResponse)(nil),      // 32: purchase.MarkSettlementInitiatedResponse
+	(*FinishPurchaseRequest)(nil),                // 33: purchase.FinishPurchaseRequest
+	(*FinishPurchaseResponse)(nil),               // 34: purchase.FinishPurchaseResponse
+	(*HealthRequest)(nil),                        // 35: purchase.HealthRequest
+	(*HealthResponse)(nil),                       // 36: purchase.HealthResponse
+	(*timestamppb.Timestamp)(nil),                // 37: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                        // 38: google.protobuf.Empty
 }
 var file_purchase_proto_depIdxs = []int32{
-	41, // 0: purchase.Purchase.settlement_initiated_at:type_name -> google.protobuf.Timestamp
-	41, // 1: purchase.Purchase.locked_at:type_name -> google.protobuf.Timestamp
-	41, // 2: purchase.Purchase.finished_at:type_name -> google.protobuf.Timestamp
+	37, // 0: purchase.Purchase.settlement_initiated_at:type_name -> google.protobuf.Timestamp
+	37, // 1: purchase.Purchase.locked_at:type_name -> google.protobuf.Timestamp
+	37, // 2: purchase.Purchase.finished_at:type_name -> google.protobuf.Timestamp
 	1,  // 3: purchase.Snapshot.tasks:type_name -> purchase.Task
 	0,  // 4: purchase.GetPurchaseResponse.purchase:type_name -> purchase.Purchase
-	42, // 5: purchase.ListPurchasesRequest.empty:type_name -> google.protobuf.Empty
-	0,  // 6: purchase.ListPurchasesResponse.purchases:type_name -> purchase.Purchase
-	42, // 7: purchase.JoinByInviteResponse.empty:type_name -> google.protobuf.Empty
-	42, // 8: purchase.RemoveParticipantResponse.empty:type_name -> google.protobuf.Empty
-	42, // 9: purchase.TakeTaskResponse.empty:type_name -> google.protobuf.Empty
-	42, // 10: purchase.DeleteTaskResponse.empty:type_name -> google.protobuf.Empty
-	1,  // 11: purchase.ListTasksByPurchaseIdResponse.tasks:type_name -> purchase.Task
-	42, // 12: purchase.MarkTaskAsDoneResponse.empty:type_name -> google.protobuf.Empty
-	42, // 13: purchase.LockPurchaseResponse.empty:type_name -> google.protobuf.Empty
-	42, // 14: purchase.UnlockPurchaseResponse.empty:type_name -> google.protobuf.Empty
-	2,  // 15: purchase.GetSnapshotResponse.snapshot:type_name -> purchase.Snapshot
-	42, // 16: purchase.MarkSettlementInitiatedResponse.empty:type_name -> google.protobuf.Empty
-	42, // 17: purchase.FinishPurchaseResponse.empty:type_name -> google.protobuf.Empty
-	42, // 18: purchase.HealthRequest.empty:type_name -> google.protobuf.Empty
-	3,  // 19: purchase.PurchaseService.CreatePurchase:input_type -> purchase.CreatePurchaseRequest
-	5,  // 20: purchase.PurchaseService.GetPurchase:input_type -> purchase.GetPurchaseRequest
-	7,  // 21: purchase.PurchaseService.ListPurchases:input_type -> purchase.ListPurchasesRequest
-	9,  // 22: purchase.PurchaseService.CreateInvite:input_type -> purchase.CreateInviteRequest
-	11, // 23: purchase.PurchaseService.JoinByInvite:input_type -> purchase.JoinByInviteRequest
-	13, // 24: purchase.PurchaseService.RemoveParticipant:input_type -> purchase.RemoveParticipantRequest
-	15, // 25: purchase.PurchaseService.ListParticipantsByPurchaseId:input_type -> purchase.ListParticipantsByPurchaseIdRequest
-	17, // 26: purchase.PurchaseService.CreateTask:input_type -> purchase.CreateTaskRequest
-	19, // 27: purchase.PurchaseService.TakeTask:input_type -> purchase.TakeTaskRequest
-	21, // 28: purchase.PurchaseService.DeleteTask:input_type -> purchase.DeleteTaskRequest
-	23, // 29: purchase.PurchaseService.ListTasksByPurchaseId:input_type -> purchase.ListTasksByPurchaseIdRequest
-	25, // 30: purchase.PurchaseService.MarkTaskAsDone:input_type -> purchase.MarkTaskAsDoneRequest
-	27, // 31: purchase.PurchaseService.LockPurchase:input_type -> purchase.LockPurchaseRequest
-	29, // 32: purchase.PurchaseService.UnlockPurchase:input_type -> purchase.UnlockPurchaseRequest
-	31, // 33: purchase.PurchaseService.CanUnlock:input_type -> purchase.CanUnlockRequest
-	33, // 34: purchase.PurchaseService.GetSnapshot:input_type -> purchase.GetSnapshotRequest
-	35, // 35: purchase.PurchaseService.MarkSettlementInitiated:input_type -> purchase.MarkSettlementInitiatedRequest
-	37, // 36: purchase.PurchaseService.FinishPurchase:input_type -> purchase.FinishPurchaseRequest
-	39, // 37: purchase.PurchaseService.Health:input_type -> purchase.HealthRequest
-	4,  // 38: purchase.PurchaseService.CreatePurchase:output_type -> purchase.CreatePurchaseResponse
-	6,  // 39: purchase.PurchaseService.GetPurchase:output_type -> purchase.GetPurchaseResponse
-	8,  // 40: purchase.PurchaseService.ListPurchases:output_type -> purchase.ListPurchasesResponse
-	10, // 41: purchase.PurchaseService.CreateInvite:output_type -> purchase.CreateInviteResponse
-	12, // 42: purchase.PurchaseService.JoinByInvite:output_type -> purchase.JoinByInviteResponse
-	14, // 43: purchase.PurchaseService.RemoveParticipant:output_type -> purchase.RemoveParticipantResponse
-	16, // 44: purchase.PurchaseService.ListParticipantsByPurchaseId:output_type -> purchase.ListParticipantsByPurchaseIdResponse
-	18, // 45: purchase.PurchaseService.CreateTask:output_type -> purchase.CreateTaskResponse
-	20, // 46: purchase.PurchaseService.TakeTask:output_type -> purchase.TakeTaskResponse
-	22, // 47: purchase.PurchaseService.DeleteTask:output_type -> purchase.DeleteTaskResponse
-	24, // 48: purchase.PurchaseService.ListTasksByPurchaseId:output_type -> purchase.ListTasksByPurchaseIdResponse
-	26, // 49: purchase.PurchaseService.MarkTaskAsDone:output_type -> purchase.MarkTaskAsDoneResponse
-	28, // 50: purchase.PurchaseService.LockPurchase:output_type -> purchase.LockPurchaseResponse
-	30, // 51: purchase.PurchaseService.UnlockPurchase:output_type -> purchase.UnlockPurchaseResponse
-	32, // 52: purchase.PurchaseService.CanUnlock:output_type -> purchase.CanUnlockResponse
-	34, // 53: purchase.PurchaseService.GetSnapshot:output_type -> purchase.GetSnapshotResponse
-	36, // 54: purchase.PurchaseService.MarkSettlementInitiated:output_type -> purchase.MarkSettlementInitiatedResponse
-	38, // 55: purchase.PurchaseService.FinishPurchase:output_type -> purchase.FinishPurchaseResponse
-	40, // 56: purchase.PurchaseService.Health:output_type -> purchase.HealthResponse
-	38, // [38:57] is the sub-list for method output_type
-	19, // [19:38] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	38, // 5: purchase.JoinByInviteResponse.empty:type_name -> google.protobuf.Empty
+	38, // 6: purchase.RemoveParticipantResponse.empty:type_name -> google.protobuf.Empty
+	38, // 7: purchase.TakeTaskResponse.empty:type_name -> google.protobuf.Empty
+	38, // 8: purchase.DeleteTaskResponse.empty:type_name -> google.protobuf.Empty
+	1,  // 9: purchase.ListTasksByPurchaseIdResponse.tasks:type_name -> purchase.Task
+	38, // 10: purchase.MarkTaskAsDoneResponse.empty:type_name -> google.protobuf.Empty
+	38, // 11: purchase.LockPurchaseResponse.empty:type_name -> google.protobuf.Empty
+	38, // 12: purchase.UnlockPurchaseResponse.empty:type_name -> google.protobuf.Empty
+	2,  // 13: purchase.GetSnapshotResponse.snapshot:type_name -> purchase.Snapshot
+	38, // 14: purchase.MarkSettlementInitiatedResponse.empty:type_name -> google.protobuf.Empty
+	38, // 15: purchase.FinishPurchaseResponse.empty:type_name -> google.protobuf.Empty
+	38, // 16: purchase.HealthRequest.empty:type_name -> google.protobuf.Empty
+	3,  // 17: purchase.PurchaseService.CreatePurchase:input_type -> purchase.CreatePurchaseRequest
+	5,  // 18: purchase.PurchaseService.GetPurchase:input_type -> purchase.GetPurchaseRequest
+	7,  // 19: purchase.PurchaseService.CreateInvite:input_type -> purchase.CreateInviteRequest
+	9,  // 20: purchase.PurchaseService.JoinByInvite:input_type -> purchase.JoinByInviteRequest
+	11, // 21: purchase.PurchaseService.RemoveParticipant:input_type -> purchase.RemoveParticipantRequest
+	13, // 22: purchase.PurchaseService.ListParticipantsByPurchaseId:input_type -> purchase.ListParticipantsByPurchaseIdRequest
+	15, // 23: purchase.PurchaseService.CreateTask:input_type -> purchase.CreateTaskRequest
+	17, // 24: purchase.PurchaseService.TakeTask:input_type -> purchase.TakeTaskRequest
+	19, // 25: purchase.PurchaseService.DeleteTask:input_type -> purchase.DeleteTaskRequest
+	21, // 26: purchase.PurchaseService.ListTasksByPurchaseId:input_type -> purchase.ListTasksByPurchaseIdRequest
+	23, // 27: purchase.PurchaseService.MarkTaskAsDone:input_type -> purchase.MarkTaskAsDoneRequest
+	25, // 28: purchase.PurchaseService.LockPurchase:input_type -> purchase.LockPurchaseRequest
+	27, // 29: purchase.PurchaseService.UnlockPurchase:input_type -> purchase.UnlockPurchaseRequest
+	29, // 30: purchase.PurchaseService.GetSnapshot:input_type -> purchase.GetSnapshotRequest
+	31, // 31: purchase.PurchaseService.MarkSettlementInitiated:input_type -> purchase.MarkSettlementInitiatedRequest
+	33, // 32: purchase.PurchaseService.FinishPurchase:input_type -> purchase.FinishPurchaseRequest
+	35, // 33: purchase.PurchaseService.Health:input_type -> purchase.HealthRequest
+	4,  // 34: purchase.PurchaseService.CreatePurchase:output_type -> purchase.CreatePurchaseResponse
+	6,  // 35: purchase.PurchaseService.GetPurchase:output_type -> purchase.GetPurchaseResponse
+	8,  // 36: purchase.PurchaseService.CreateInvite:output_type -> purchase.CreateInviteResponse
+	10, // 37: purchase.PurchaseService.JoinByInvite:output_type -> purchase.JoinByInviteResponse
+	12, // 38: purchase.PurchaseService.RemoveParticipant:output_type -> purchase.RemoveParticipantResponse
+	14, // 39: purchase.PurchaseService.ListParticipantsByPurchaseId:output_type -> purchase.ListParticipantsByPurchaseIdResponse
+	16, // 40: purchase.PurchaseService.CreateTask:output_type -> purchase.CreateTaskResponse
+	18, // 41: purchase.PurchaseService.TakeTask:output_type -> purchase.TakeTaskResponse
+	20, // 42: purchase.PurchaseService.DeleteTask:output_type -> purchase.DeleteTaskResponse
+	22, // 43: purchase.PurchaseService.ListTasksByPurchaseId:output_type -> purchase.ListTasksByPurchaseIdResponse
+	24, // 44: purchase.PurchaseService.MarkTaskAsDone:output_type -> purchase.MarkTaskAsDoneResponse
+	26, // 45: purchase.PurchaseService.LockPurchase:output_type -> purchase.LockPurchaseResponse
+	28, // 46: purchase.PurchaseService.UnlockPurchase:output_type -> purchase.UnlockPurchaseResponse
+	30, // 47: purchase.PurchaseService.GetSnapshot:output_type -> purchase.GetSnapshotResponse
+	32, // 48: purchase.PurchaseService.MarkSettlementInitiated:output_type -> purchase.MarkSettlementInitiatedResponse
+	34, // 49: purchase.PurchaseService.FinishPurchase:output_type -> purchase.FinishPurchaseResponse
+	36, // 50: purchase.PurchaseService.Health:output_type -> purchase.HealthResponse
+	34, // [34:51] is the sub-list for method output_type
+	17, // [17:34] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_purchase_proto_init() }
@@ -2349,7 +2151,7 @@ func file_purchase_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_purchase_proto_rawDesc), len(file_purchase_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   41,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

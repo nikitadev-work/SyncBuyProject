@@ -13,6 +13,7 @@ type Config struct {
 	HTTP       HTTP
 	Metrics    Metrics
 	PostgreSQL PostgreSQL
+	TokenProvider
 }
 
 type App struct {
@@ -46,13 +47,14 @@ type PostgreSQL struct {
 	TxMarker   string `env:"DB_TX_MARKER,required"`
 }
 
+type TokenProvider struct {
+	SecretKey string `env:"TOKEN_PROVIDER_SECRET_KEY,required"`
+}
+
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
-
-	err := env.Parse(cfg)
-	if err != nil {
+	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("config error: %w", err)
 	}
-
 	return cfg, nil
 }
